@@ -1,0 +1,2 @@
+# CampusOS-AI-Driven-Autonomous-Institution-Lifecycle-and-Operations-Intelligence-Platform
+CampusOS is a smart campus management system that automates academic and administrative tasks using PHP, Laravel, and MySQL. It includes role-based access control, timetable generation, examination and result management, AI-powered chatbot, OCR, NLP, question paper generation, and predictive analytics to improve campus efficiency.
