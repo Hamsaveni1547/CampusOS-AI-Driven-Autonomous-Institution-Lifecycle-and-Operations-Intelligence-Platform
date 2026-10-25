@@ -1,0 +1,13 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - app/
+        - routes/
+        - config/
+    level: 5
+    tmpDir: storage/framework/cache/phpstan
+    ignoreErrors:
+        # Livewire concerns (WithTable, WithApiErrors, InteractsWithApi) are used by the screens built from F2 on.
+        - identifier: trait.unused
