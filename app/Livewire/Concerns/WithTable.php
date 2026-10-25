@@ -9,7 +9,7 @@ use Livewire\Attributes\Url;
  * Used with <x-ui.filters>, <x-ui.th sortable>, <x-ui.pagination>.
  *
  * The component builds its API query with tableQuery() and declares its filters:
- *     public array $filters = ['status' => '', 'department' => ''];
+ *     protected function defaultFilters(): array { return ['status' => '', 'department' => '']; }
  */
 trait WithTable
 {
@@ -30,6 +30,21 @@ trait WithTable
      */
     #[Url(as: 'f')]
     public array $filters = [];
+
+    /**
+     * Filter keys with their empty values; override in the component.
+     *
+     * @return array<string, mixed>
+     */
+    protected function defaultFilters(): array
+    {
+        return [];
+    }
+
+    public function mountWithTable(): void
+    {
+        $this->filters = array_merge($this->defaultFilters(), $this->filters);
+    }
 
     public function updatedSearch(): void
     {
@@ -107,13 +122,13 @@ trait WithTable
             'page' => $this->page,
             'per_page' => $this->perPage,
             'sort' => $this->sort,
-        ], fn ($value) => $value !== '' && $value !== null);
+        ], fn ($value) => $value !== '');
     }
 
     /**
      * Chips for <x-ui.filters :active>: [label => key].
      *
-     * @param  array<string, array<string, string>|string>  $labels  key => label, or key => [value => label]
+     * @param  array<string, array<int|string, string>|string>  $labels  key => label, or key => [value => label] (numeric values become int keys)
      * @return array<string, string>
      */
     protected function filterChips(array $labels): array

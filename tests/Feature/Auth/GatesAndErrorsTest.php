@@ -17,9 +17,6 @@ class GatesAndErrorsTest extends TestCase
 
     public function test_signed_in_shell_shows_only_permitted_navigation(): void
     {
-        Route::middleware('web')->get('/staff-test', fn () => 'ok')->name('staff.index');
-        Route::middleware('web')->get('/users-test', fn () => 'ok')->name('users.index');
-        Route::getRoutes()->refreshNameLookups();
         $this->fakeShell();
 
         $this->signIn(['permissions' => ['hr.employees.view']])
@@ -27,8 +24,8 @@ class GatesAndErrorsTest extends TestCase
             ->assertOk()
             ->assertSee('Anita')
             ->assertSee('RV College of Engineering')
-            ->assertSee(url('/staff-test'))
-            ->assertDontSee(url('/users-test'))
+            ->assertSee(route('staff.index'))
+            ->assertDontSee(route('users.index'))
             ->assertHeader('Content-Security-Policy');
     }
 

@@ -134,6 +134,22 @@ class CampusApi
         return (array) $this->handle($response, 'POST', 'files')->data();
     }
 
+    /**
+     * Raw GET for file downloads (CSV exports). Errors still become ApiExceptions.
+     *
+     * @param  array<string, mixed>  $query
+     */
+    public function download(string $path, array $query = []): Response
+    {
+        try {
+            $response = $this->request()->accept('*/*')->get(ltrim($path, '/'), $this->clean($query));
+        } catch (ConnectionException $exception) {
+            throw $this->unreachable($exception);
+        }
+
+        return $this->handle($response, 'GET', $path)->raw();
+    }
+
     public function forgetMemo(): void
     {
         $this->memo = [];
