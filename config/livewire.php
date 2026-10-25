@@ -68,8 +68,8 @@ return [
     */
 
     'make_command' => [
-        'type' => 'sfc', // Options: 'sfc', 'mfc', 'class'
-        'emoji' => true, // Options: true, false
+        'type' => 'class', // Options: 'sfc', 'mfc', 'class'
+        'emoji' => false, // Options: true, false
         'with' => [
             'js' => false,
             'css' => false,

@@ -12,7 +12,7 @@ class GatesAndErrorsTest extends TestCase
 {
     public function test_guests_are_sent_to_sign_in(): void
     {
-        $this->get('/')->assertRedirect(url('/login'));
+        $this->get('/')->assertRedirect(route('login'));
     }
 
     public function test_signed_in_shell_shows_only_permitted_navigation(): void
@@ -94,7 +94,7 @@ class GatesAndErrorsTest extends TestCase
     {
         Http::fake([self::API.'auth/logout' => Http::response(['message' => 'Signed out.'])]);
 
-        $this->signIn()->post('/logout')->assertRedirect('/')->assertSessionMissing('campus.token');
+        $this->signIn()->post('/logout')->assertRedirect(route('login'))->assertSessionMissing('campus.token');
 
         Http::assertSent(fn ($request) => $request->url() === self::API.'auth/logout');
     }
