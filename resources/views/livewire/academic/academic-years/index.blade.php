@@ -25,7 +25,7 @@
                         <div class="min-w-0 flex-1">
                             <h2 class="flex items-center gap-2 text-base font-semibold text-ink">
                                 {{ $year['name'] }}
-                                @if ($year['is_current'])<x-ui.badge size="sm" tone="success" dot>{{ __('Current') }}</x-ui.badge>@endif
+                                @if ($year['is_current'] ?? false)<x-ui.badge size="sm" tone="success" dot>{{ __('Current') }}</x-ui.badge>@endif
                                 <x-ui.status-badge :status="$year['status']" size="sm" />
                             </h2>
                             <p class="text-sm text-ink-muted">{{ \App\Support\Format::date($year['starts_on']) }} – {{ \App\Support\Format::date($year['ends_on']) }}</p>
@@ -35,7 +35,7 @@
                             <x-ui.dropdown>
                                 <x-slot:trigger><x-ui.button size="sm" variant="ghost" icon="ellipsis" :aria-label="__('Actions')" /></x-slot:trigger>
                                 <x-ui.dropdown-item icon="pencil" wire:click="editYear('{{ $year['id'] }}')">{{ __('Edit') }}</x-ui.dropdown-item>
-                                @unless ($year['is_current'])
+                                @unless ($year['is_current'] ?? false)
                                     <x-ui.dropdown-item icon="star" wire:click="confirm('year', '{{ $year['id'] }}', 'make-current')">{{ __('Make current') }}</x-ui.dropdown-item>
                                 @endunless
                                 <x-ui.dropdown-item icon="lock" wire:click="confirm('year', '{{ $year['id'] }}', 'close')">{{ __('Close year') }}</x-ui.dropdown-item>
@@ -48,7 +48,7 @@
                             <div class="min-w-0 flex-1">
                                 <p class="flex items-center gap-2 text-sm font-medium text-ink">
                                     {{ $term['name'] }}
-                                    @if ($term['is_current'])<x-ui.badge size="sm" tone="success" dot>{{ __('Current') }}</x-ui.badge>@endif
+                                    @if ($term['is_current'] ?? false)<x-ui.badge size="sm" tone="success" dot>{{ __('Current') }}</x-ui.badge>@endif
                                 </p>
                                 <p class="text-xs text-ink-muted">{{ $termTypes[$term['type']] ?? $term['type'] }} · {{ \App\Support\Format::date($term['starts_on']) }} – {{ \App\Support\Format::date($term['ends_on']) }}</p>
                             </div>
@@ -57,7 +57,7 @@
                                 <x-ui.dropdown>
                                     <x-slot:trigger><x-ui.button size="sm" variant="ghost" icon="ellipsis" :aria-label="__('Actions')" /></x-slot:trigger>
                                     <x-ui.dropdown-item icon="pencil" wire:click="editTerm('{{ $year['id'] }}', '{{ $term['id'] }}')">{{ __('Edit') }}</x-ui.dropdown-item>
-                                    @unless ($term['is_current'])
+                                    @unless ($term['is_current'] ?? false)
                                         <x-ui.dropdown-item icon="star" wire:click="confirm('term', '{{ $term['id'] }}', 'make-current')">{{ __('Make current') }}</x-ui.dropdown-item>
                                     @endunless
                                     <x-ui.dropdown-item icon="lock" wire:click="confirm('term', '{{ $term['id'] }}', 'close')">{{ __('Close term') }}</x-ui.dropdown-item>
