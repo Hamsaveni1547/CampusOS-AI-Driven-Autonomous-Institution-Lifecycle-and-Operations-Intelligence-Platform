@@ -46,11 +46,8 @@
         </x-ui.dropdown>
     @endif
 
-    @if ($notificationsUrl = $route('notifications.index'))
-        <a href="{{ $notificationsUrl }}" class="relative rounded-md p-2 text-ink-muted transition hover:bg-surface-muted hover:text-ink" aria-label="{{ __('Notifications') }}">
-            <x-ui.icon name="bell" class="size-5" />
-            {{ $notificationBadge ?? '' }}
-        </a>
+    @if ($user && $route('notifications.index'))
+        <livewire:notification-bell />
     @endif
 
     <x-ui.theme-toggle />

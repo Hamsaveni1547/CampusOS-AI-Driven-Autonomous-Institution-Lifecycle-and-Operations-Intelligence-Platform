@@ -73,6 +73,24 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
+     * Fake the calls every signed-in page makes (home widgets and the notification bell).
+     *
+     * @param  array<string, mixed>  $extra  more URL => response fakes
+     */
+    protected function fakeShell(array $extra = []): void
+    {
+        Http::fake(array_merge([
+            self::API.'me/notifications/unread-count' => Http::response(['data' => ['unread' => 3]]),
+            self::API.'me/notifications*' => Http::response(['data' => [], 'meta' => ['next_cursor' => null, 'per_page' => 20]]),
+            self::API.'academic-context' => Http::response(['data' => [
+                'academic_year' => ['id' => 'y1', 'name' => '2026-27'],
+                'term' => ['id' => 't1', 'name' => 'Odd Semester 2026', 'type' => 'odd', 'academic_year' => ['id' => 'y1', 'name' => '2026-27']],
+            ]]),
+            self::API.'calendar-events*' => Http::response(['data' => []]),
+        ], $extra));
+    }
+
+    /**
      * API error body in the backend's envelope.
      *
      * @param  array<string, mixed>  $extra

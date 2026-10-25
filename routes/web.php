@@ -1,6 +1,10 @@
 <?php
 
 use App\Http\Controllers\SessionController;
+use App\Livewire\Account\NotificationPreferences;
+use App\Livewire\Account\Profile;
+use App\Livewire\Account\Security;
+use App\Livewire\Account\StaffProfile;
 use App\Livewire\Auth\ForgotPassword;
 use App\Livewire\Auth\Login;
 use App\Livewire\Auth\Register;
@@ -10,6 +14,9 @@ use App\Livewire\Auth\ResetPassword;
 use App\Livewire\Auth\SetupAccount;
 use App\Livewire\Auth\TwoStepChallenge;
 use App\Livewire\Auth\VerifyEmail;
+use App\Livewire\Calendar;
+use App\Livewire\Home;
+use App\Livewire\Notifications;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -39,7 +46,16 @@ Route::middleware(['campus.auth'])->group(function (): void {
     Route::livewire('required/two-step', RequiredTwoStepSetup::class)->name('required.two-step');
 
     Route::middleware('campus.ready')->group(function (): void {
-        Route::view('/', 'pages.home')->name('home');
+        Route::livewire('/', Home::class)->name('home');
+        Route::livewire('notifications', Notifications::class)->name('notifications.index');
+        Route::livewire('calendar', Calendar::class)->name('calendar.index');
+
+        Route::prefix('account')->name('account.')->group(function (): void {
+            Route::livewire('/', Profile::class)->name('profile');
+            Route::livewire('security', Security::class)->name('security');
+            Route::livewire('notifications', NotificationPreferences::class)->name('notifications');
+            Route::livewire('staff-record', StaffProfile::class)->name('staff-profile');
+        });
     });
 });
 

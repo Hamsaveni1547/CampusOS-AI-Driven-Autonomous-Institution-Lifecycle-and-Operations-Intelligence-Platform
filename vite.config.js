@@ -17,6 +17,10 @@ export default defineConfig({
         },
     },
     server: {
+        // IPv4 on purpose: browsers reject IPv6 hosts like [::1] in a Content Security Policy.
+        host: '127.0.0.1',
+        port: 5173,
+        strictPort: true,
         watch: {
             ignored: ['**/storage/framework/views/**'],
         },

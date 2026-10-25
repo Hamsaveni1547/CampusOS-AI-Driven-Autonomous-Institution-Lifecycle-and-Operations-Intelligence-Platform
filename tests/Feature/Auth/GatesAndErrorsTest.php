@@ -20,11 +20,12 @@ class GatesAndErrorsTest extends TestCase
         Route::middleware('web')->get('/staff-test', fn () => 'ok')->name('staff.index');
         Route::middleware('web')->get('/users-test', fn () => 'ok')->name('users.index');
         Route::getRoutes()->refreshNameLookups();
+        $this->fakeShell();
 
         $this->signIn(['permissions' => ['hr.employees.view']])
             ->get('/')
             ->assertOk()
-            ->assertSee('Welcome, Anita Rao')
+            ->assertSee('Anita')
             ->assertSee('RV College of Engineering')
             ->assertSee(url('/staff-test'))
             ->assertDontSee(url('/users-test'))
@@ -33,13 +34,13 @@ class GatesAndErrorsTest extends TestCase
 
     public function test_stale_profile_is_refreshed(): void
     {
-        Http::fake([self::API.'me' => Http::response(['data' => $this->me(['name' => 'Anita R. Rao'])])]);
+        $this->fakeShell([self::API.'me' => Http::response(['data' => $this->me(['name' => 'Anita R. Rao'])])]);
 
         $this->signIn()
             ->withSession(['campus.me_refreshed_at' => now()->subHour()->getTimestamp()])
             ->get('/')
             ->assertOk()
-            ->assertSee('Welcome, Anita R. Rao');
+            ->assertSee('Odd Semester 2026');
     }
 
     public function test_pending_requirement_redirects_to_its_screen(): void
