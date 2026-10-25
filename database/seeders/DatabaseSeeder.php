@@ -2,18 +2,24 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
+    use WithoutModelEvents;
+
     /**
-     * Seeds only data that is identical for every institution.
-     * Create the administrator with: php artisan campusos:create-admin
+     * Seed the application's database.
      */
     public function run(): void
     {
-        $this->call([
-            RolePermissionSeeder::class,
+        // User::factory(10)->create();
+
+        User::factory()->create([
+            'name' => 'Test User',
+            'email' => 'test@example.com',
         ]);
     }
 }

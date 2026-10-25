@@ -28,6 +28,11 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'campusos_api' => [
+        'url' => env('CAMPUSOS_API_URL', 'http://localhost:8000/api/v1'),
+        'timeout' => (int) env('CAMPUSOS_API_TIMEOUT', 15),
+    ],
+
     'slack' => [
         'notifications' => [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),
