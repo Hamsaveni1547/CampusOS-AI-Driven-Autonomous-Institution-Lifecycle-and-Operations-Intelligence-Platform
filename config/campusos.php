@@ -10,6 +10,8 @@ return [
         'url' => rtrim((string) env('CAMPUSOS_API_URL', 'http://localhost:8000/api/v1'), '/'),
         'timeout' => (int) env('CAMPUSOS_API_TIMEOUT', 15),
         'connect_timeout' => (int) env('CAMPUSOS_API_CONNECT_TIMEOUT', 5),
+        // Seconds a read is reused for lookups and Livewire round trips (0 = off). See CampusApi::get().
+        'read_cache_seconds' => (int) env('CAMPUSOS_API_READ_CACHE_SECONDS', 20),
     ],
 
     /*

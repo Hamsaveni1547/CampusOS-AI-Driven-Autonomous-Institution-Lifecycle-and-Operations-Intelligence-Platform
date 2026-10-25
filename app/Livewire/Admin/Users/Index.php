@@ -67,10 +67,8 @@ class Index extends Component
 
     public function render(): View
     {
-        $page = $this->api()->endpoint('users')->page($this->activeFilters(), $this->tableQuery());
-
         return view('livewire.admin.users.index', [
-            'page' => $page,
+            'rows' => $this->api()->endpoint('users')->page($this->activeFilters(), $this->tableQuery()),
             'roleOptions' => app(Lookups::class)->roles(),
             'roleNames' => app(Lookups::class)->roleNames(),
             'chips' => $this->filterChips([

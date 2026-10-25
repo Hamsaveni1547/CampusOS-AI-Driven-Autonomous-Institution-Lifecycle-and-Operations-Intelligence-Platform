@@ -136,7 +136,7 @@ class Index extends Component
             ->mapWithKeys(fn ($u) => [$u['id'] => $u['code'].' · '.$u['name']])->all();
 
         return view('livewire.platform.institutions.index', [
-            'page' => $this->api()->endpoint('platform/institutions')->page($this->activeFilters(), $this->tableQuery()),
+            'rows' => $this->api()->endpoint('platform/institutions')->page($this->activeFilters(), $this->tableQuery()),
             'types' => self::types(),
             'universities' => $universities,
             'chips' => $this->filterChips([

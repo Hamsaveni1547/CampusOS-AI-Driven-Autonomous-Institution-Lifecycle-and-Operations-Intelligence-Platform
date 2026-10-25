@@ -8,10 +8,14 @@ use App\Api\Resources\AuthApi;
 use App\Api\Resources\Endpoint;
 use App\Api\Resources\MeApi;
 use App\Auth\SessionAuth;
+use GuzzleHttp\Psr7\Response as Psr7Response;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Http\Client\Pool;
 use Illuminate\Http\Client\Response;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -30,6 +34,8 @@ class CampusApi
      * @var array<string, ApiResponse>
      */
     private array $memo = [];
+
+    private bool $cacheDisabled = false;
 
     public function __construct(
         private SessionAuth $auth,
@@ -59,23 +65,117 @@ class CampusApi
     // ----- HTTP verbs ------------------------------------------------------
 
     /**
+     * GET with two speed-ups:
+     *  - $memoize: the same call twice in one request hits the API once.
+     *  - Short read cache (campusos.api.read_cache_seconds) shared across requests of the
+     *    same signed-in session, used for lookups ($memoize) and for every read during a
+     *    Livewire round trip (opening a modal, sorting) so the page is not re-fetched.
+     *    A full page load always reads fresh data, and any write by this session clears it.
+     *
      * @param  array<string, mixed>  $query
      */
     public function get(string $path, array $query = [], bool $memoize = false): ApiResponse
     {
-        $key = $path.'?'.http_build_query($query);
+        $path = ltrim($path, '/');
+        $key = $path.'?'.http_build_query($this->clean($query));
 
         if ($memoize && isset($this->memo[$key])) {
             return $this->memo[$key];
         }
 
-        $response = $this->send('GET', $path, ['query' => $query]);
+        $cacheKey = $this->readCacheKey($key, $memoize);
+        $cached = $cacheKey !== null ? Cache::get($cacheKey) : null;
+
+        if (is_array($cached)) {
+            $response = $this->fromCache($cached);
+        } else {
+            $response = $this->send('GET', $path, ['query' => $query]);
+
+            if ($cacheKey !== null) {
+                Cache::put($cacheKey, $this->toCache($response->raw()), $this->readCacheSeconds());
+            }
+        }
 
         if ($memoize) {
             $this->memo[$key] = $response;
         }
 
         return $response;
+    }
+
+    /**
+     * Several GETs at once (in parallel), e.g. a page and its side panels.
+     *
+     * @param  array<string, string|array{0: string, 1?: array<string, mixed>}>  $calls  name => path, or name => [path, query]
+     * @return array<string, ApiResponse>
+     */
+    public function getMany(array $calls): array
+    {
+        $results = [];
+        $pending = [];
+
+        foreach ($calls as $name => $call) {
+            [$path, $query] = is_array($call) ? [ltrim($call[0], '/'), $call[1] ?? []] : [ltrim($call, '/'), []];
+            $cacheKey = $this->readCacheKey($path.'?'.http_build_query($this->clean($query)), false);
+            $cached = $cacheKey !== null ? Cache::get($cacheKey) : null;
+
+            if (is_array($cached)) {
+                $results[$name] = $this->fromCache($cached);
+            } else {
+                $pending[$name] = [$path, $query, $cacheKey];
+            }
+        }
+
+        if (count($pending) === 1) {
+            $name = array_key_first($pending);
+            $results[$name] = $this->get($pending[$name][0], $pending[$name][1]);
+        } elseif ($pending !== []) {
+            $responses = Http::pool(function (Pool $pool) use ($pending): array {
+                $requests = [];
+
+                foreach ($pending as $name => [$path, $query]) {
+                    $requests[] = $this->configure($pool->as((string) $name))->get($path, $this->clean($query));
+                }
+
+                return $requests;
+            });
+
+            foreach ($pending as $name => [$path, , $cacheKey]) {
+                $response = $responses[$name] ?? null;
+
+                if (! $response instanceof Response) {
+                    throw $this->unreachable($response instanceof ConnectionException ? $response : new ConnectionException('No response from the API.'));
+                }
+
+                $results[$name] = $this->handle($response, 'GET', $path);
+
+                if ($cacheKey !== null) {
+                    Cache::put($cacheKey, $this->toCache($response), $this->readCacheSeconds());
+                }
+            }
+        }
+
+        return array_replace(array_intersect_key($calls, $results), $results);
+    }
+
+    /**
+     * Run reads that must be live (polling, progress) without the read cache.
+     *
+     * @template T
+     *
+     * @param  callable(): T  $callback
+     * @return T
+     */
+    public function withoutCache(callable $callback): mixed
+    {
+        $previous = $this->cacheDisabled;
+        $this->cacheDisabled = true;
+
+        try {
+            return $callback();
+        } finally {
+            $this->cacheDisabled = $previous;
+        }
     }
 
     /**
@@ -150,9 +250,13 @@ class CampusApi
         return $this->handle($response, 'GET', $path)->raw();
     }
 
+    /**
+     * Forget everything read so far (this request and the session's read cache).
+     */
     public function forgetMemo(): void
     {
         $this->memo = [];
+        $this->bumpReadCache();
     }
 
     // ----- internals -------------------------------------------------------
@@ -177,14 +281,80 @@ class CampusApi
 
         if ($method !== 'GET') {
             $this->memo = [];
+            $this->bumpReadCache();
         }
 
         return $this->handle($response, $method, $path);
     }
 
+    // ----- read cache ------------------------------------------------------
+
+    private function readCacheSeconds(): int
+    {
+        return max(0, (int) config('campusos.api.read_cache_seconds', 20));
+    }
+
+    /**
+     * Cache key for a read, or null when the read must go to the API.
+     */
+    private function readCacheKey(string $request, bool $memoize): ?string
+    {
+        $token = $this->auth->token();
+
+        if ($this->cacheDisabled || $token === null || $this->readCacheSeconds() === 0) {
+            return null;
+        }
+
+        if (! $memoize && ! request()->hasHeader('X-Livewire')) {
+            return null;
+        }
+
+        $owner = hash('sha256', $token.'|'.$this->auth->institutionId());
+
+        return 'campus_api:'.$owner.':'.$this->readCacheVersion($owner).':'.hash('sha256', $request.'|'.app()->getLocale());
+    }
+
+    private function readCacheVersion(string $owner): int
+    {
+        return (int) Cache::get('campus_api_version:'.$owner, 0);
+    }
+
+    private function bumpReadCache(): void
+    {
+        $token = $this->auth->token();
+
+        if ($token === null) {
+            return;
+        }
+
+        $owner = hash('sha256', $token.'|'.$this->auth->institutionId());
+        Cache::forever('campus_api_version:'.$owner, $this->readCacheVersion($owner) + 1);
+    }
+
+    /**
+     * @return array{status: int, headers: array<string, mixed>, body: string}
+     */
+    private function toCache(Response $response): array
+    {
+        return ['status' => $response->status(), 'headers' => ['Content-Type' => $response->header('Content-Type')], 'body' => Crypt::encryptString($response->body())];
+    }
+
+    /**
+     * @param  array<string, mixed>  $cached
+     */
+    private function fromCache(array $cached): ApiResponse
+    {
+        return new ApiResponse(new Response(new Psr7Response((int) $cached['status'], (array) $cached['headers'], Crypt::decryptString((string) $cached['body']))));
+    }
+
     private function request(): PendingRequest
     {
-        $request = Http::baseUrl((string) config('campusos.api.url'))
+        return $this->configure(Http::createPendingRequest());
+    }
+
+    private function configure(PendingRequest $request): PendingRequest
+    {
+        $request = $request->baseUrl((string) config('campusos.api.url'))
             ->timeout((int) config('campusos.api.timeout'))
             ->connectTimeout((int) config('campusos.api.connect_timeout'))
             ->acceptJson()

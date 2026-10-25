@@ -28,7 +28,7 @@ class Index extends Component
     public function render(): View
     {
         return view('livewire.admin.health.index', [
-            'health' => (array) $this->api()->get($this->healthPath())->data(),
+            'health' => (array) $this->api()->withoutCache(fn () => $this->api()->get($this->healthPath()))->data(),
             'checkedAt' => now()->toIso8601String(),
         ]);
     }

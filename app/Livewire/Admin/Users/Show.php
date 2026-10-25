@@ -151,10 +151,15 @@ class Show extends Component
 
     public function render(): View
     {
-        $user = $this->users()->find($this->userId);
-        $events = $this->can('identity.security_events.view')
-            ? array_slice($this->api()->get('users/'.$this->userId.'/security-events')->page()->items, 0, 10)
-            : [];
+        $calls = ['user' => 'users/'.$this->userId];
+
+        if ($this->can('identity.security_events.view')) {
+            $calls['events'] = ['users/'.$this->userId.'/security-events', ['per_page' => 10]];
+        }
+
+        $responses = $this->api()->getMany($calls);
+        $user = (array) $responses['user']->data();
+        $events = isset($responses['events']) ? array_slice($responses['events']->page()->items, 0, 10) : [];
         $lookups = app(Lookups::class);
         $canAssign = $this->can('identity.role_assignments.manage');
 

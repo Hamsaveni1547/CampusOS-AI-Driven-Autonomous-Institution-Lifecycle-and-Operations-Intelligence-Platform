@@ -29,10 +29,16 @@ class Monitoring extends Component
 
     public function render(): View
     {
+        $data = $this->api()->withoutCache(fn () => $this->api()->getMany([
+            'health' => 'platform/monitoring/health',
+            'queues' => 'platform/monitoring/queues',
+            'failed' => ['platform/monitoring/failed-jobs', ['limit' => 100]],
+        ]));
+
         return view('livewire.platform.monitoring', [
-            'health' => (array) $this->api()->get('platform/monitoring/health')->data(),
-            'queues' => (array) $this->api()->get('platform/monitoring/queues')->data(),
-            'failed' => (array) $this->api()->get('platform/monitoring/failed-jobs', ['limit' => 100])->data(),
+            'health' => (array) $data['health']->data(),
+            'queues' => (array) $data['queues']->data(),
+            'failed' => (array) $data['failed']->data(),
             'checkedAt' => now()->toIso8601String(),
         ]);
     }

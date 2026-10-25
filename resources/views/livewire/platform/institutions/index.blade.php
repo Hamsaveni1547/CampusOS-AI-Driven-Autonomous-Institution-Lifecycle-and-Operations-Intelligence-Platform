@@ -10,7 +10,7 @@
         <x-ui.select wire:model.live="filters.status" :options="['active' => __('Active'), 'suspended' => __('Suspended')]" :placeholder="__('Any status')" class="sm:w-40" :aria-label="__('Status')" />
     </x-ui.filters>
 
-    <x-ui.table loading="search,filters,sort,gotoPage,setPerPage" :empty="$page->isEmpty()">
+    <x-ui.table loading="search,filters,sort,gotoPage,setPerPage" :empty="$rows->isEmpty()">
         <x-slot:head>
             <x-ui.th sortable="name" :sort="$sort">{{ __('Institution') }}</x-ui.th>
             <x-ui.th>{{ __('Type') }}</x-ui.th>
@@ -20,7 +20,7 @@
             <x-ui.th sortable="created_at" :sort="$sort">{{ __('Created') }}</x-ui.th>
             <x-ui.th><span class="sr-only">{{ __('Actions') }}</span></x-ui.th>
         </x-slot:head>
-        @foreach ($page->items as $institution)
+        @foreach ($rows->items as $institution)
             <x-ui.tr wire:key="inst-{{ $institution['id'] }}">
                 <x-ui.td primary>
                     <p class="font-medium text-ink">{{ $institution['name'] }}</p>
@@ -48,7 +48,7 @@
             </x-ui.tr>
         @endforeach
         <x-slot:emptyState><x-ui.empty-state compact icon="building" :title="__('No institutions found')" /></x-slot:emptyState>
-        <x-slot:footer><x-ui.pagination :page="$page" /></x-slot:footer>
+        <x-slot:footer><x-ui.pagination :page="$rows" /></x-slot:footer>
     </x-ui.table>
 
     <x-ui.drawer name="institution-form" size="lg" :title="$editingId ? __('Edit institution') : __('New institution')">

@@ -16,14 +16,14 @@
         <x-ui.select wire:model.live="filters.locked" :options="['1' => __('Locked'), '0' => __('Not locked')]" :placeholder="__('Any lock state')" class="sm:w-40" :aria-label="__('Locked')" />
     </x-ui.filters>
 
-    <x-ui.table loading="search,filters,sort,gotoPage,setPerPage" :empty="$page->isEmpty()">
+    <x-ui.table loading="search,filters,sort,gotoPage,setPerPage" :empty="$rows->isEmpty()">
         <x-slot:head>
             <x-ui.th sortable="name" :sort="$sort">{{ __('Name') }}</x-ui.th>
             <x-ui.th>{{ __('Roles') }}</x-ui.th>
             <x-ui.th>{{ __('Status') }}</x-ui.th>
             <x-ui.th sortable="last_login_at" :sort="$sort">{{ __('Last sign-in') }}</x-ui.th>
         </x-slot:head>
-        @foreach ($page->items as $user)
+        @foreach ($rows->items as $user)
             <x-ui.tr wire:key="u-{{ $user['id'] }}" :href="route('users.show', $user['id'])">
                 <x-ui.td primary>
                     <div class="flex items-center gap-3">
@@ -55,7 +55,7 @@
         <x-slot:emptyState>
             <x-ui.empty-state compact icon="users" :title="__('No users found')" :description="__('Try another search or clear the filters.')" />
         </x-slot:emptyState>
-        <x-slot:footer><x-ui.pagination :page="$page" /></x-slot:footer>
+        <x-slot:footer><x-ui.pagination :page="$rows" /></x-slot:footer>
     </x-ui.table>
 
     <x-ui.drawer name="user-form" :title="__('Add user')" :description="__('If the email already has a CampusOS account, it is linked to this institution.')">

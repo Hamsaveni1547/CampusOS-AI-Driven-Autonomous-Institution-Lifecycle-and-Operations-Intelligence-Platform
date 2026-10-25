@@ -8,7 +8,7 @@
         </x-slot:actions>
     </x-ui.page-header>
 
-    <x-ui.table loading="gotoPage,setPerPage" :empty="$page->isEmpty()">
+    <x-ui.table loading="gotoPage,setPerPage" :empty="$rows->isEmpty()">
         <x-slot:head>
             <x-ui.th>{{ __('Type') }}</x-ui.th>
             <x-ui.th>{{ __('Status') }}</x-ui.th>
@@ -16,7 +16,7 @@
             <x-ui.th>{{ __('By') }}</x-ui.th>
             <x-ui.th>{{ __('Started') }}</x-ui.th>
         </x-slot:head>
-        @foreach ($page->items as $import)
+        @foreach ($rows->items as $import)
             <x-ui.tr wire:key="i-{{ $import['id'] }}">
                 <x-ui.td primary><button type="button" wire:click="show('{{ $import['id'] }}')" class="font-medium text-ink hover:underline">{{ $types[$import['type']] ?? \App\Support\Format::label($import['type']) }}</button></x-ui.td>
                 <x-ui.td :label="__('Status')"><x-ui.status-badge :status="$import['status']" /></x-ui.td>
@@ -26,7 +26,7 @@
             </x-ui.tr>
         @endforeach
         <x-slot:emptyState><x-ui.empty-state compact icon="file-up" :title="__('No imports yet')" /></x-slot:emptyState>
-        <x-slot:footer><x-ui.pagination :page="$page" /></x-slot:footer>
+        <x-slot:footer><x-ui.pagination :page="$rows" /></x-slot:footer>
     </x-ui.table>
 
     <x-ui.modal name="import-start" :title="__('New import')">

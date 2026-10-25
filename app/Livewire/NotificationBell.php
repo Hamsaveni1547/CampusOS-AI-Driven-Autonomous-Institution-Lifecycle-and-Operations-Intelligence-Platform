@@ -24,7 +24,7 @@ class NotificationBell extends Component
     public function refreshCount(CampusApi $api): void
     {
         try {
-            $this->unread = $api->me()->unreadNotifications();
+            $this->unread = $api->withoutCache(fn () => $api->me()->unreadNotifications());
         } catch (ApiException) {
             // The bell must never break the page; keep the last known count.
         }

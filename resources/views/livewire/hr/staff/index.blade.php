@@ -18,7 +18,7 @@
         <x-ui.select wire:model.live="filters.status" :options="\App\Livewire\Hr\Staff\Index::statuses()" :placeholder="__('Active')" class="sm:w-36" :aria-label="__('Status')" />
     </x-ui.filters>
 
-    <x-ui.table loading="search,filters,sort,gotoPage,setPerPage" :empty="$page->isEmpty()">
+    <x-ui.table loading="search,filters,sort,gotoPage,setPerPage" :empty="$rows->isEmpty()">
         <x-slot:head>
             <x-ui.th sortable="name" :sort="$sort">{{ __('Name') }}</x-ui.th>
             <x-ui.th sortable="code" :sort="$sort">{{ __('Code') }}</x-ui.th>
@@ -27,7 +27,7 @@
             <x-ui.th sortable="joined_on" :sort="$sort">{{ __('Joined') }}</x-ui.th>
             <x-ui.th>{{ __('Status') }}</x-ui.th>
         </x-slot:head>
-        @foreach ($page->items as $employee)
+        @foreach ($rows->items as $employee)
             <x-ui.tr wire:key="e-{{ $employee['id'] }}" :href="route('staff.show', $employee['id'])">
                 <x-ui.td primary>
                     <div class="flex items-center gap-3">
@@ -46,7 +46,7 @@
             </x-ui.tr>
         @endforeach
         <x-slot:emptyState><x-ui.empty-state compact icon="briefcase" :title="__('No staff found')" :description="__('Try another search or clear the filters.')" /></x-slot:emptyState>
-        <x-slot:footer><x-ui.pagination :page="$page" /></x-slot:footer>
+        <x-slot:footer><x-ui.pagination :page="$rows" /></x-slot:footer>
     </x-ui.table>
 
     <x-ui.drawer name="staff-form" size="lg" :title="__('Add staff')" :description="__('If the email already has a CampusOS account, it is linked.')">

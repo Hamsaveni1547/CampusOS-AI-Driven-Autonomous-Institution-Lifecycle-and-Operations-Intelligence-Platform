@@ -79,7 +79,7 @@ class Index extends Component
         $departments = app(Lookups::class)->departments(false);
 
         return view('livewire.academic.rooms.index', [
-            'page' => $this->api()->endpoint('rooms')->page($this->activeFilters(), $this->tableQuery()),
+            'rows' => $this->api()->endpoint('rooms')->page($this->activeFilters(), $this->tableQuery()),
             'departments' => $departments,
             'types' => self::types(),
             'canManage' => $this->can('institution.rooms.manage'),

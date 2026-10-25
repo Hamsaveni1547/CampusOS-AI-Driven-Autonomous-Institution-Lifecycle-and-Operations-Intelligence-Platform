@@ -86,7 +86,7 @@ class Index extends Component
         $designations = collect($this->api()->endpoint('designations')->all())->mapWithKeys(fn ($d) => [$d['id'] => $d['name']])->all();
 
         return view('livewire.hr.staff.index', [
-            'page' => $this->api()->endpoint('employees')->page($this->activeFilters(), $this->tableQuery()),
+            'rows' => $this->api()->endpoint('employees')->page($this->activeFilters(), $this->tableQuery()),
             'departments' => $departments,
             'designations' => $designations,
             'formDesignations' => $this->form !== [] ? $lookups->designations($this->form['staff_type'] ?? null) : [],

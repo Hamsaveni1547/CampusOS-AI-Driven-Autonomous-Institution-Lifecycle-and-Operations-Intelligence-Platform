@@ -104,11 +104,11 @@ class Index extends Component
     public function render(): View
     {
         $types = $this->types();
-        $open = $this->openId ? $this->api()->endpoint('imports')->find($this->openId) : null;
+        $open = $this->openId ? $this->api()->withoutCache(fn () => $this->api()->endpoint('imports')->find((string) $this->openId)) : null;
         $templateType = $open['type'] ?? ($this->type ?: array_key_first($types));
 
         return view('livewire.admin.imports.index', [
-            'page' => $this->api()->endpoint('imports')->page($this->activeFilters(null), $this->tableQuery()),
+            'rows' => $this->api()->endpoint('imports')->page($this->activeFilters(null), $this->tableQuery()),
             'types' => $types,
             'open' => $open,
             'busy' => in_array($open['status'] ?? null, ['pending', 'validating', 'processing'], true),
