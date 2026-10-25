@@ -38,6 +38,14 @@ class Index extends Component
         return 'admin.settings.manage';
     }
 
+    /**
+     * @return array{title: string, description: string}
+     */
+    protected function heading(): array
+    {
+        return ['title' => __('Settings'), 'description' => __('Values left at their default follow the platform default.')];
+    }
+
     public function mount(): void
     {
         $this->loadGroup();
@@ -121,6 +129,7 @@ class Index extends Component
         $permission = $this->managePermission();
 
         return view('livewire.admin.settings.index', [
+            'heading' => $this->heading(),
             'groups' => $this->groups(),
             'current' => $this->current(),
             'canManage' => $permission === null || $this->can($permission),

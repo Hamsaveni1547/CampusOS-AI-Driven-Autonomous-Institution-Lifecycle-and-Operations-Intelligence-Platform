@@ -1,5 +1,5 @@
 <div>
-    <x-ui.page-header :title="__('Settings')" :description="__('Values left at their default follow the platform default.')" />
+    <x-ui.page-header :title="$heading['title']" :description="$heading['description']" />
 
     <div class="grid gap-6 lg:grid-cols-4">
         <nav class="flex gap-1 overflow-x-auto lg:flex-col" aria-label="{{ __('Setting groups') }}">

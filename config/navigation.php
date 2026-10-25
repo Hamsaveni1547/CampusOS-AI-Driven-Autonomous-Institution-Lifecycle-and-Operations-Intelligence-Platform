@@ -2,7 +2,7 @@
 
 /*
 | Sidebar and command palette. Each item:
-|   label, route (named route), icon (resources/icons), and optional:
+|   label, route (named route), icon (any Lucide name), and optional:
 |   permissions (any of), platform (platform admins only), roles (any of), keywords (palette search).
 | Items whose route does not exist yet are hidden automatically, so future screens
 | can be listed here before they are built.

@@ -28,6 +28,12 @@ return [
     */
     'style_guide' => (bool) env('CAMPUSOS_STYLE_GUIDE', env('APP_ENV') === 'local'),
 
+    /*
+    | Folder with the Lucide SVG icons (the lucide-static npm package, all ~2,100 icons).
+    | Use any name from https://lucide.dev/icons. Deploys must run `npm ci` so it exists.
+    */
+    'icons_path' => env('CAMPUSOS_ICONS_PATH', base_path('node_modules/lucide-static/icons')),
+
     'support_email' => env('CAMPUSOS_SUPPORT_EMAIL'),
 
 ];

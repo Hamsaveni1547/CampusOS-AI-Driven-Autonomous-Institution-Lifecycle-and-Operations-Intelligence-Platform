@@ -22,6 +22,7 @@ use App\Livewire\Calendar;
 use App\Livewire\Home;
 use App\Livewire\Hr;
 use App\Livewire\Notifications;
+use App\Livewire\Platform;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -92,6 +93,13 @@ Route::middleware(['campus.auth'])->group(function (): void {
             Route::get('audit/export', AuditExportController::class)->middleware('permission:admin.audit.export')->name('audit.export');
             Route::livewire('imports', Admin\Imports\Index::class)->middleware('permission:identity.users.import,hr.employees.import')->name('imports.index');
             Route::livewire('health', Admin\Health\Index::class)->middleware('permission:admin.monitoring.view')->name('health.index');
+        });
+
+        // Platform administrators only
+        Route::prefix('platform')->name('platform.')->middleware('permission:platform')->group(function (): void {
+            Route::livewire('institutions', Platform\Institutions\Index::class)->name('institutions.index');
+            Route::livewire('settings', Platform\Settings::class)->name('settings.index');
+            Route::livewire('monitoring', Platform\Monitoring::class)->name('monitoring.index');
         });
     });
 });

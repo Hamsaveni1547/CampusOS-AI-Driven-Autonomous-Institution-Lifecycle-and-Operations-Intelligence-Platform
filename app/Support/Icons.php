@@ -5,8 +5,9 @@ namespace App\Support;
 use InvalidArgumentException;
 
 /**
- * Inline SVG icons from resources/icons (Lucide, ISC licence). Rendered inline so
- * they inherit `currentColor` and need no extra requests.
+ * Inline SVG icons from the lucide-static npm package (ISC licence), so every Lucide
+ * icon name works (https://lucide.dev/icons). Rendered inline so they inherit
+ * `currentColor` and need no extra requests.
  */
 final class Icons
 {
@@ -43,7 +44,7 @@ final class Icons
 
         if (! is_file($path)) {
             if (app()->environment('local', 'testing')) {
-                throw new InvalidArgumentException("Icon [{$name}] not found. Add it to scripts/sync-icons.mjs and run `npm run icons`.");
+                throw new InvalidArgumentException("Icon [{$name}] not found. Use a name from https://lucide.dev/icons and make sure `npm install` has run.");
             }
 
             return self::$cache[$name] = '<circle cx="12" cy="12" r="9" />';
@@ -57,6 +58,6 @@ final class Icons
 
     private static function path(string $name): string
     {
-        return resource_path('icons/'.basename($name).'.svg');
+        return rtrim((string) config('campusos.icons_path'), '/\\').DIRECTORY_SEPARATOR.basename($name).'.svg';
     }
 }
