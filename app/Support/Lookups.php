@@ -136,6 +136,53 @@ class Lookups
     }
 
     /**
+     * Academics option lists from the API as value => label: course_types, components, curriculum_statuses, categories.
+     *
+     * @return array<string, string>
+     */
+    public function academicsOptions(string $list): array
+    {
+        $options = (array) $this->api->get('academics/options', memoize: true)->data($list, []);
+
+        return collect($options)->mapWithKeys(fn (array $option) => [$option['value'] => $option['label']])->all();
+    }
+
+    /**
+     * Active courses as id => "CODE · Title".
+     *
+     * @return array<string, string>
+     */
+    public function courses(): array
+    {
+        return collect($this->api->endpoint('courses')->page(['status' => 'active'], ['per_page' => 200])->items)
+            ->mapWithKeys(fn (array $course) => [$course['id'] => $course['code'].' · '.$course['title']])->all();
+    }
+
+    /**
+     * Terms as id => "Name (year)", current first.
+     *
+     * @return array<string, string>
+     */
+    public function terms(): array
+    {
+        return collect($this->api->endpoint('terms')->all())
+            ->sortByDesc(fn (array $term) => [$term['is_current'], $term['starts_on']])
+            ->mapWithKeys(fn (array $term) => [$term['id'] => $term['name'].($term['is_current'] ? ' · '.__('current') : '')])->all();
+    }
+
+    /**
+     * Active teaching staff as employee options.
+     *
+     * @return array<int, array{value: string, label: string, description: string|null}>
+     */
+    public function teachers(): array
+    {
+        return collect($this->api->endpoint('employees')->page(['status' => 'active', 'staff_type' => 'teaching'], ['per_page' => 200])->items)
+            ->map(fn (array $e) => ['value' => $e['id'], 'label' => $e['name'], 'description' => trim(($e['department']['name'] ?? '').' · '.$e['employee_code'], ' ·')])
+            ->values()->all();
+    }
+
+    /**
      * Academic years as id => name (newest first).
      *
      * @return array<string, string>

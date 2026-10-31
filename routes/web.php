@@ -4,6 +4,7 @@ use App\Http\Controllers\AuditExportController;
 use App\Http\Controllers\FileDownloadController;
 use App\Http\Controllers\SessionController;
 use App\Livewire\Academic;
+use App\Livewire\Academics;
 use App\Livewire\Account\NotificationPreferences;
 use App\Livewire\Account\Profile;
 use App\Livewire\Account\Security;
@@ -91,6 +92,18 @@ Route::middleware(['campus.auth'])->group(function (): void {
         Route::middleware('permission:admissions.cycles.manage')->group(function (): void {
             Route::livewire('admission-cycles', Admissions\Cycles\Index::class)->name('admission-cycles.index');
             Route::livewire('admission-cycles/{cycle}', Admissions\Cycles\Show::class)->name('admission-cycles.show');
+        });
+
+        // Curriculum and teaching (class pages check access in the API)
+        Route::livewire('my-classes', Academics\MyClasses::class)->name('my-classes.index');
+        Route::livewire('classes/{class}', Academics\ClassShow::class)->name('classes.show');
+        Route::middleware('permission:academics.catalogue.view')->group(function (): void {
+            Route::livewire('courses', Academics\Courses\Index::class)->name('courses.index');
+            Route::livewire('courses/{course}', Academics\Courses\Show::class)->name('courses.show');
+            Route::livewire('curricula', Academics\Curricula\Index::class)->name('curricula.index');
+            Route::livewire('curricula/{curriculum}', Academics\Curricula\Show::class)->name('curricula.show');
+            Route::livewire('course-offerings', Academics\Offerings\Index::class)->name('course-offerings.index');
+            Route::livewire('faculty-workload', Academics\Workload::class)->name('faculty-workload.index');
         });
 
         // Students
