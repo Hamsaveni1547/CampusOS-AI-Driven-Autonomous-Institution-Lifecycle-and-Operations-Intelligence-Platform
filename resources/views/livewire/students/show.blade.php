@@ -98,6 +98,18 @@
         </div>
 
         <div class="space-y-6">
+            <x-ui.card :title="__('Results')" :padding="false">
+                <x-slot:actions><span class="text-sm text-ink-muted">{{ __('CGPA') }} <span class="font-semibold text-ink">{{ $history['cgpa'] ?? '—' }}</span> · {{ __('backlogs :n', ['n' => $history['backlogs'] ?? 0]) }}</span></x-slot:actions>
+                @forelse ($history['results'] ?? [] as $result)
+                    <div wire:key="hist-{{ $result['cycle']['id'] }}" class="border-b border-line px-5 py-3 text-sm last:border-0">
+                        <p class="flex justify-between"><span class="font-medium text-ink">{{ $result['cycle']['name'] }}</span><span class="text-ink-muted">{{ __('SGPA :s', ['s' => $result['sgpa'] ?? '—']) }}</span></p>
+                        <p class="mt-1 flex flex-wrap gap-x-3 text-xs">@foreach ($result['courses'] as $course)<span><span class="text-ink-muted">{{ $course['code'] }}</span> <span @class(['font-medium', 'text-danger' => $course['passed'] === false])>{{ $course['grade'] }}</span></span>@endforeach</p>
+                    </div>
+                @empty
+                    <p class="px-5 py-3 text-sm text-ink-muted">{{ __('No published results yet.') }}</p>
+                @endforelse
+            </x-ui.card>
+
             <x-ui.card :title="__('Parents / guardians')" :padding="false">
                 @if ($can['update'])
                     <x-slot:actions><x-ui.button size="sm" variant="ghost" icon="pencil" wire:click="openGuardians" :aria-label="__('Edit guardians')" /></x-slot:actions>

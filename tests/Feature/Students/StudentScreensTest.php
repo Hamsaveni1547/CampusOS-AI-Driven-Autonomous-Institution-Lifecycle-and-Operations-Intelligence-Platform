@@ -23,6 +23,10 @@ class StudentScreensTest extends TestCase
         view()->share('errors', new ViewErrorBag);
         $this->signIn(['permissions' => self::OFFICE, 'roles' => ['admin_staff']]);
         Http::fake([
+            self::API.'students/st1/academic-history' => Http::response(['data' => ['cgpa' => 7.5, 'backlogs' => 1, 'results' => [[
+                'cycle' => ['id' => 'cy1', 'name' => 'Nov 2026', 'published_at' => null], 'sgpa' => 7.5, 'cgpa' => 7.5, 'credits_earned' => 3.0, 'credits_registered' => 7.0,
+                'courses' => [['id' => 'rg1', 'code' => '21CS51', 'title' => 'DBMS', 'credits' => 4.0, 'internal' => 10.0, 'external' => null, 'grade' => 'AB', 'passed' => false, 'revaluation' => null, 'can_request_revaluation' => false]],
+            ]]]]),
             self::API.'students/options' => Http::response(['data' => [
                 'statuses' => [['value' => 'active', 'label' => 'Active', 'final' => false], ['value' => 'on_leave', 'label' => 'On leave', 'final' => false], ['value' => 'graduated', 'label' => 'Graduated', 'final' => true]],
                 'guardian_relations' => [['value' => 'father', 'label' => 'Father'], ['value' => 'mother', 'label' => 'Mother']],
@@ -100,6 +104,7 @@ class StudentScreensTest extends TestCase
 
         Livewire::test(Show::class, ['student' => 'st1'])
             ->assertSee('Suresh')
+            ->assertSeeInOrder(['CGPA', '7.5', 'backlogs 1', 'Nov 2026', '21CS51', 'AB'])
             ->assertSee('••••••••1234')
             ->assertSee('Correction requested by the student')
             ->call('openPlacement')

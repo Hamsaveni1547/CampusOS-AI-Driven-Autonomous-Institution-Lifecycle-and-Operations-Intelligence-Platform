@@ -244,6 +244,7 @@ class Show extends Component
             'bloodGroups' => $editing ? $lookups->studentOptions('blood_groups') : [],
             'idTypes' => $editing ? $lookups->studentOptions('id_proof_types') : [],
             'categories' => $lookups->admissionOptions('categories'),
+            'history' => (array) $this->api()->get('students/'.$this->studentId.'/academic-history')->data(),
             'batches' => $editing ? $lookups->batches($student['programme']['id'] ?? null) : [],
             'sections' => $editing ? $lookups->sections($this->placement['batch_id'] ?: null) : [],
             'can' => [
