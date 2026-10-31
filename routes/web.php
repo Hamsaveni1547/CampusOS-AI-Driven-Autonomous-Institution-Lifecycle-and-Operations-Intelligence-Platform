@@ -28,6 +28,7 @@ use App\Livewire\Home;
 use App\Livewire\Hr;
 use App\Livewire\Notifications;
 use App\Livewire\Platform;
+use App\Livewire\QuestionBank;
 use App\Livewire\Students;
 use App\Livewire\Timetable;
 use Illuminate\Support\Facades\Route;
@@ -134,6 +135,11 @@ Route::middleware(['campus.auth'])->group(function (): void {
         Route::livewire('my-exams', Exams\MyExams::class)->name('my-exams.index');
         Route::livewire('my-exams/{cycle}/hall-ticket', Exams\HallTicket::class)->name('hall-ticket.show');
         Route::livewire('my-results', Exams\MyResults::class)->name('my-results.show');
+
+        // Question bank and papers
+        Route::livewire('question-bank', QuestionBank\Questions::class)->middleware('permission:qbank.questions.contribute,qbank.questions.manage,qbank.papers.set,qbank.papers.review')->name('question-bank.index');
+        Route::livewire('question-papers', QuestionBank\Papers::class)->middleware('permission:qbank.papers.set,qbank.papers.review,qbank.papers.seal,qbank.papers.release,qbank.logs.view')->name('question-papers.index');
+        Route::livewire('question-papers/{paper}', QuestionBank\PaperShow::class)->middleware('permission:qbank.papers.set,qbank.papers.review,qbank.papers.seal,qbank.papers.release,qbank.logs.view')->name('question-papers.show');
 
         // Timetable
         Route::livewire('my-timetable', Timetable\MyTimetable::class)->name('my-timetable.show');

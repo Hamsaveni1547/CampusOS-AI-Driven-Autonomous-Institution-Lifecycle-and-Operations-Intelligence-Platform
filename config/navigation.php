@@ -35,6 +35,8 @@ return [
             ['label' => 'My exams', 'route' => 'my-exams.index', 'icon' => 'file-check', 'roles' => ['student'], 'keywords' => 'hall ticket backlog supplementary'],
             ['label' => 'My results', 'route' => 'my-results.show', 'icon' => 'award', 'roles' => ['student'], 'keywords' => 'grades sgpa cgpa revaluation'],
             ['label' => 'Examinations', 'route' => 'exam-cycles.index', 'icon' => 'file-check', 'permissions' => ['exams.cycles.manage', 'exams.reports.view', 'exams.evaluation.enter', 'exams.results.process', 'exams.results.verify', 'exams.results.publish'], 'keywords' => 'exam timetable eligibility marks results'],
+            ['label' => 'Question bank', 'route' => 'question-bank.index', 'icon' => 'file-question', 'permissions' => ['qbank.questions.contribute', 'qbank.questions.manage', 'qbank.papers.set', 'qbank.papers.review'], 'keywords' => 'questions bloom difficulty'],
+            ['label' => 'Question papers', 'route' => 'question-papers.index', 'icon' => 'file-lock', 'permissions' => ['qbank.papers.set', 'qbank.papers.review', 'qbank.papers.seal', 'qbank.papers.release', 'qbank.logs.view'], 'keywords' => 'blueprint generate seal release'],
             ['label' => 'Revaluation', 'route' => 'revaluations.index', 'icon' => 'refresh-cw', 'permissions' => ['exams.revaluation.manage'], 'keywords' => 'revaluation exam marks'],
             ['label' => 'Attendance shortage', 'route' => 'attendance-shortage.index', 'icon' => 'triangle-alert', 'permissions' => ['attendance.reports.view'], 'keywords' => 'condonation percentage'],
             ['label' => 'Timetables', 'route' => 'timetables.index', 'icon' => 'table', 'permissions' => ['timetable.view'], 'keywords' => 'schedule periods substitute'],

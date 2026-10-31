@@ -1,0 +1,1 @@
+Add M10 Question bank screens: a per-course question bank with coverage counts, MCQ options and answers; blueprints with parts, marks and attempt rules; generating paper sets linked to upcoming exams; and a paper page to open the paper (logged), submit, approve or send back, seal, and see the access log.
