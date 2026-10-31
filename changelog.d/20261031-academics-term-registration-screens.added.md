@@ -1,0 +1,1 @@
+Add term registration screens: students see core courses, pick electives (seats left, full electives disabled, running credit total against the limit) and submit; staff review registrations by term, programme and status and approve or reject one by one or in bulk; teachers see the class roster on the class page.

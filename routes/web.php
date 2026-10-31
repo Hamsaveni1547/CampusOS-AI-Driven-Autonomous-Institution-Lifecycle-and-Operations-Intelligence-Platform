@@ -97,6 +97,8 @@ Route::middleware(['campus.auth'])->group(function (): void {
         // Curriculum and teaching (class pages check access in the API)
         Route::livewire('my-classes', Academics\MyClasses::class)->name('my-classes.index');
         Route::livewire('classes/{class}', Academics\ClassShow::class)->name('classes.show');
+        Route::livewire('my-registration', Academics\MyRegistration::class)->name('my-registration.show');
+        Route::livewire('term-registrations', Academics\Registrations::class)->middleware('permission:academics.registrations.approve')->name('term-registrations.index');
         Route::middleware('permission:academics.catalogue.view')->group(function (): void {
             Route::livewire('courses', Academics\Courses\Index::class)->name('courses.index');
             Route::livewire('courses/{course}', Academics\Courses\Show::class)->name('courses.show');

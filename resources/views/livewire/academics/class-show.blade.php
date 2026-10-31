@@ -36,6 +36,22 @@
             @endforelse
         </div>
 
+        <div class="space-y-6">
+        @if ($class['can_teach'])
+            <x-ui.card :title="__('Students')" :description="trans_choice(':count registered|:count registered', count($roster))" :padding="false">
+                <div class="max-h-96 overflow-y-auto">
+                    @forelse ($roster as $student)
+                        <div wire:key="rs-{{ $student['student_id'] }}" class="flex items-center gap-3 border-b border-line px-5 py-2 text-sm last:border-0">
+                            <span class="w-10 font-mono text-xs text-ink-muted">{{ $student['roll_no'] ?? '—' }}</span>
+                            <span class="min-w-0 flex-1 truncate text-ink">{{ $student['name'] }}</span>
+                            @if ($student['registration_status'] !== 'approved')<x-ui.badge size="sm" tone="warning">{{ __('Pending') }}</x-ui.badge>@endif
+                        </div>
+                    @empty
+                        <p class="px-5 py-4 text-sm text-ink-muted">{{ __('No students registered yet.') }}</p>
+                    @endforelse
+                </div>
+            </x-ui.card>
+        @endif
         <x-ui.card :title="__('Materials')" :padding="false">
             @forelse ($class['materials'] as $material)
                 <div wire:key="cm-{{ $material['id'] }}" class="flex items-start gap-3 border-b border-line px-5 py-3 last:border-0">
@@ -55,6 +71,7 @@
                 <p class="px-5 py-4 text-sm text-ink-muted">{{ __('Nothing shared yet.') }}</p>
             @endforelse
         </x-ui.card>
+        </div>
     </div>
 
     @if ($class['can_teach'])

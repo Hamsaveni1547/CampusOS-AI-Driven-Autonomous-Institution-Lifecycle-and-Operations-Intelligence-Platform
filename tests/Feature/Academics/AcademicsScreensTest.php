@@ -7,7 +7,9 @@ use App\Livewire\Academics\Courses\Index as Courses;
 use App\Livewire\Academics\Courses\Show as CourseShow;
 use App\Livewire\Academics\Curricula\Show as CurriculumShow;
 use App\Livewire\Academics\MyClasses;
+use App\Livewire\Academics\MyRegistration;
 use App\Livewire\Academics\Offerings\Index as Offerings;
+use App\Livewire\Academics\Registrations;
 use App\Livewire\Academics\Workload;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
@@ -159,6 +161,7 @@ class AcademicsScreensTest extends TestCase
         Http::fake([
             self::API.'offering-sections/os1/coverage*' => Http::response(['data' => $class(true)]),
             self::API.'offering-sections/os1/materials' => Http::response(['data' => $class(true)]),
+            self::API.'offering-sections/os1/students' => Http::response(['data' => ['class' => ['id' => 'os1'], 'students' => [['student_id' => 'st1', 'register_no' => 'R1', 'roll_no' => '01', 'name' => 'Asha', 'registration_status' => 'submitted']]]]),
             self::API.'offering-sections/os1' => Http::response(['data' => $class(true)]),
             self::API.'me/teaching' => Http::response(['data' => ['term' => ['id' => 't1', 'name' => 'Odd 2026'], 'weekly_hours' => 4, 'classes' => [['id' => 'os1', 'course' => $this->course(), 'section' => ['name' => 'A', 'batch' => 'BE-CSE 2026'], 'components' => [['component' => 'theory', 'weekly_hours' => 4]], 'coverage_percent' => 50]]]]),
         ]);
@@ -167,6 +170,8 @@ class AcademicsScreensTest extends TestCase
 
         Livewire::test(ClassShow::class, ['class' => 'os1'])
             ->assertSee('Taught')
+            ->assertSee('Asha')
+            ->assertSee('Pending')
             ->call('toggleTopic', 'tp2', true)
             ->call('toggleTopic', 'tp1', false)
             ->call('openMaterial')
@@ -192,6 +197,63 @@ class AcademicsScreensTest extends TestCase
 
         Livewire::test(MyClasses::class)->assertSee('My courses')->assertSee('Dr. Kavya')->assertDontSee('Teaching');
         Livewire::test(ClassShow::class, ['class' => 'os1'])->assertDontSee('Share material');
+    }
+
+    public function test_student_registers_with_electives(): void
+    {
+        $this->signIn(['permissions' => [], 'roles' => ['student']]);
+        $registered = false;
+        Http::fake([self::API.'me/term-registration' => function (Request $r) use (&$registered) {
+            $registered = $registered || $r->method() === 'POST';
+
+            return Http::response(['data' => [
+                'term' => ['id' => 't1', 'name' => 'Odd 2026'], 'credit_limit' => 8.0, 'can_register' => ! $registered,
+                'registration' => $registered ? ['id' => 'r1', 'status' => 'submitted', 'total_credits' => 7.0, 'remarks' => null, 'submitted_at' => now()->toIso8601String(), 'decided_by' => null, 'courses' => [['offering_id' => 'o1', 'code' => '21CS51', 'title' => 'DBMS', 'credits' => 4.0, 'type' => 'core'], ['offering_id' => 'o2', 'code' => '21CS561', 'title' => 'Artificial Intelligence', 'credits' => 3.0, 'type' => 'elective']]] : null,
+                'core' => [['offering_id' => 'o1', 'course' => $this->course()]],
+                'electives' => [
+                    ['offering_id' => 'o2', 'course' => $this->course(['id' => 'c2', 'code' => '21CS561', 'title' => 'Artificial Intelligence', 'credits' => 3.0]), 'capacity' => 60, 'seats_left' => 12],
+                    ['offering_id' => 'o3', 'course' => $this->course(['id' => 'c3', 'code' => '21CS562', 'title' => 'Internet of Things', 'credits' => 3.0]), 'capacity' => 60, 'seats_left' => 0],
+                ],
+            ]]);
+        }]);
+
+        Livewire::test(MyRegistration::class)
+            ->assertSee('Core courses')
+            ->assertSee('12 seats left')
+            ->assertSee('Full')
+            ->set('electives', ['o2'])
+            ->assertSee('Total: 7 credits')
+            ->call('register')
+            ->assertHasNoErrors()
+            ->assertSee('Waiting for approval');
+
+        Http::assertSent(fn (Request $r) => $r->method() === 'POST' && $r['elective_offering_ids'] === ['o2']);
+    }
+
+    public function test_staff_approve_and_reject_registrations(): void
+    {
+        $this->signIn(['permissions' => ['academics.registrations.approve'], 'roles' => ['hod']]);
+        $row = ['id' => 'r1', 'student' => ['id' => 'st1', 'name' => 'Asha', 'register_no' => 'R1', 'programme' => 'B.E.'], 'term' => ['id' => 't1', 'name' => 'Odd 2026'], 'section' => ['name' => 'A', 'batch' => 'BE-CSE 2026'], 'term_number' => 5, 'status' => 'submitted', 'total_credits' => 7.0, 'remarks' => null, 'submitted_at' => now()->toIso8601String(), 'decided_by' => null, 'decided_at' => null, 'courses' => [['offering_id' => 'o1', 'code' => '21CS51', 'title' => 'DBMS', 'credits' => 4.0, 'type' => 'core']]];
+        Http::fake([
+            self::API.'programmes*' => Http::response(['data' => []]),
+            self::API.'term-registrations/decide' => Http::response(['data' => ['decided' => 1, 'message' => '1 registration(s) approved.']]),
+            self::API.'term-registrations*' => Http::response(['data' => [$row, ['id' => 'r2'] + $row], 'meta' => ['total' => 2]]),
+        ]);
+
+        Livewire::test(Registrations::class)
+            ->assertSee('Asha')
+            ->set('selected', ['r1', 'r2'])
+            ->call('approve')
+            ->assertSet('selected', [])
+            ->call('askReject', 'r1')
+            ->call('reject')
+            ->assertHasErrors(['remarks'])
+            ->set('remarks', 'Choose one elective')
+            ->call('reject')
+            ->assertHasNoErrors();
+
+        Http::assertSent(fn (Request $r) => str_ends_with($r->url(), 'decide') && $r['ids'] === ['r1', 'r2'] && $r['approve'] === true);
+        Http::assertSent(fn (Request $r) => str_ends_with($r->url(), 'decide') && $r['ids'] === ['r1'] && $r['approve'] === false && $r['remarks'] === 'Choose one elective');
     }
 
     public function test_course_pages_need_permission(): void

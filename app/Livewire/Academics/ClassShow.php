@@ -92,6 +92,7 @@ class ClassShow extends Component
 
         return view('livewire.academics.class-show', [
             'class' => $class,
+            'roster' => $class['can_teach'] ? (array) $this->api()->get($this->path('students'))->data('students', []) : [],
             'units' => collect($class['units'])->mapWithKeys(fn (array $unit) => [$unit['id'] => __('Unit :n: :title', ['n' => $unit['number'], 'title' => $unit['title']])])->all(),
         ])->title($class['course']['code'].' '.$class['section']['name']);
     }
