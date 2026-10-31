@@ -4,7 +4,10 @@
             <span class="text-sm text-ink-muted">{{ collect($class['faculty'])->pluck('name')->unique()->implode(', ') }}</span>
         </x-slot:meta>
         <x-slot:actions>
-            @if ($class['can_teach'])<x-ui.button icon="upload" wire:click="openMaterial">{{ __('Share material') }}</x-ui.button>@endif
+            @if ($class['can_teach'])
+                <x-ui.button variant="secondary" icon="user-check" :href="route('attendance.class', $class['id'])">{{ __('Attendance') }}</x-ui.button>
+                <x-ui.button icon="upload" wire:click="openMaterial">{{ __('Share material') }}</x-ui.button>
+            @endif
         </x-slot:actions>
     </x-ui.page-header>
 

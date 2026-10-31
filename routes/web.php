@@ -11,6 +11,7 @@ use App\Livewire\Account\Security;
 use App\Livewire\Account\StaffProfile;
 use App\Livewire\Admin;
 use App\Livewire\Admissions;
+use App\Livewire\Attendance;
 use App\Livewire\Auth\ForgotPassword;
 use App\Livewire\Auth\Login;
 use App\Livewire\Auth\Register;
@@ -108,6 +109,13 @@ Route::middleware(['campus.auth'])->group(function (): void {
             Route::livewire('course-offerings', Academics\Offerings\Index::class)->name('course-offerings.index');
             Route::livewire('faculty-workload', Academics\Workload::class)->name('faculty-workload.index');
         });
+
+        // Attendance (class pages check access in the API)
+        Route::livewire('attendance', Attendance\Take::class)->middleware('permission:attendance.records.mark,attendance.records.edit')->name('attendance.take');
+        Route::livewire('attendance/classes/{class}', Attendance\ClassAttendance::class)->name('attendance.class');
+        Route::livewire('my-attendance', Attendance\MyAttendance::class)->name('my-attendance.show');
+        Route::livewire('attendance-shortage', Attendance\Shortage::class)->middleware('permission:attendance.reports.view')->name('attendance-shortage.index');
+        Route::livewire('attendance-corrections', Attendance\Corrections::class)->middleware('permission:attendance.corrections.approve')->name('attendance-corrections.index');
 
         // Timetable
         Route::livewire('my-timetable', Timetable\MyTimetable::class)->name('my-timetable.show');
