@@ -26,6 +26,8 @@ return [
             ['label' => 'Programmes', 'route' => 'programmes.index', 'icon' => 'graduation-cap', 'roles' => ['institution_admin', 'institution_head', 'hod', 'faculty', 'admin_staff', 'examiner'], 'permissions' => ['institution.programmes.manage']],
             ['label' => 'Batches & sections', 'route' => 'batches.index', 'icon' => 'layers', 'roles' => ['institution_admin', 'institution_head', 'hod', 'faculty', 'admin_staff'], 'permissions' => ['institution.batches.manage']],
             ['label' => 'My classes', 'route' => 'my-classes.index', 'icon' => 'book-open', 'roles' => ['faculty', 'hod', 'student'], 'keywords' => 'teaching courses syllabus materials'],
+            ['label' => 'My timetable', 'route' => 'my-timetable.show', 'icon' => 'calendar-clock', 'roles' => ['faculty', 'hod', 'student'], 'keywords' => 'schedule today classes'],
+            ['label' => 'Timetables', 'route' => 'timetables.index', 'icon' => 'table', 'permissions' => ['timetable.view'], 'keywords' => 'schedule periods substitute'],
             ['label' => 'Term registration', 'route' => 'my-registration.show', 'icon' => 'clipboard-check', 'roles' => ['student'], 'keywords' => 'register electives semester'],
             ['label' => 'Term registrations', 'route' => 'term-registrations.index', 'icon' => 'clipboard-check', 'permissions' => ['academics.registrations.approve'], 'keywords' => 'approve registration electives'],
             ['label' => 'Courses', 'route' => 'courses.index', 'icon' => 'library', 'permissions' => ['academics.catalogue.view'], 'keywords' => 'subjects syllabus'],

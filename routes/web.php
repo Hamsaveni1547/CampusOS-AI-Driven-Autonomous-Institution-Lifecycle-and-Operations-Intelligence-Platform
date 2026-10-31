@@ -26,6 +26,7 @@ use App\Livewire\Hr;
 use App\Livewire\Notifications;
 use App\Livewire\Platform;
 use App\Livewire\Students;
+use App\Livewire\Timetable;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -107,6 +108,15 @@ Route::middleware(['campus.auth'])->group(function (): void {
             Route::livewire('course-offerings', Academics\Offerings\Index::class)->name('course-offerings.index');
             Route::livewire('faculty-workload', Academics\Workload::class)->name('faculty-workload.index');
         });
+
+        // Timetable
+        Route::livewire('my-timetable', Timetable\MyTimetable::class)->name('my-timetable.show');
+        Route::middleware('permission:timetable.view')->group(function (): void {
+            Route::livewire('timetables', Timetable\Index::class)->name('timetables.index');
+            Route::livewire('timetables/{timetable}', Timetable\Builder::class)->name('timetables.show');
+            Route::livewire('timetable-view', Timetable\Viewer::class)->name('timetable-view.index');
+        });
+        Route::livewire('periods', Timetable\Periods::class)->middleware('permission:timetable.manage')->name('periods.index');
 
         // Students
         Route::livewire('my-record', Students\MyRecord::class)->name('my-record.show');
