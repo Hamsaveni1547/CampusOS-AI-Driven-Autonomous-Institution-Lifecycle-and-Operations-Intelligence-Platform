@@ -40,6 +40,7 @@ class Index extends Component
         return array_filter([
             'users' => $this->can('identity.users.import') ? __('Users') : null,
             'employees' => $this->can('hr.employees.import') ? __('Staff') : null,
+            'students' => $this->can('students.records.import') ? __('Students') : null,
         ]);
     }
 

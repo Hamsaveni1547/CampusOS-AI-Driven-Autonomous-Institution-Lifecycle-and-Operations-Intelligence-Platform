@@ -97,6 +97,45 @@ class Lookups
     }
 
     /**
+     * Student option lists from the API as value => label: statuses, guardian_relations, id_proof_types, blood_groups, genders.
+     *
+     * @return array<string, string>
+     */
+    public function studentOptions(string $list): array
+    {
+        $options = (array) $this->api->get('students/options', memoize: true)->data($list, []);
+
+        return collect($options)->mapWithKeys(fn (array $option) => [$option['value'] => $option['label']])->all();
+    }
+
+    /**
+     * Batches (with their sections) as id => name, optionally for one programme.
+     *
+     * @return array<string, string>
+     */
+    public function batches(?string $programmeId = null): array
+    {
+        return collect($this->api->endpoint('batches')->all(array_filter(['programme' => $programmeId])))
+            ->mapWithKeys(fn (array $batch) => [$batch['id'] => $batch['name']])->all();
+    }
+
+    /**
+     * Sections of one batch as id => name.
+     *
+     * @return array<string, string>
+     */
+    public function sections(?string $batchId): array
+    {
+        if ($batchId === null || $batchId === '') {
+            return [];
+        }
+
+        $batch = collect($this->api->endpoint('batches')->all())->firstWhere('id', $batchId);
+
+        return collect($batch['sections'] ?? [])->mapWithKeys(fn (array $section) => [$section['id'] => $section['name']])->all();
+    }
+
+    /**
      * Academic years as id => name (newest first).
      *
      * @return array<string, string>

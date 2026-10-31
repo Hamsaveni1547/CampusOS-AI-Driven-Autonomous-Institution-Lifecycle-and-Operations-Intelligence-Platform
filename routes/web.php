@@ -24,6 +24,7 @@ use App\Livewire\Home;
 use App\Livewire\Hr;
 use App\Livewire\Notifications;
 use App\Livewire\Platform;
+use App\Livewire\Students;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -92,6 +93,14 @@ Route::middleware(['campus.auth'])->group(function (): void {
             Route::livewire('admission-cycles/{cycle}', Admissions\Cycles\Show::class)->name('admission-cycles.show');
         });
 
+        // Students
+        Route::livewire('my-record', Students\MyRecord::class)->name('my-record.show');
+        Route::middleware('permission:students.records.view')->group(function (): void {
+            Route::livewire('students', Students\Index::class)->name('students.index');
+            Route::livewire('students/{student}', Students\Show::class)->name('students.show');
+        });
+        Route::livewire('student-change-requests', Students\ChangeRequests::class)->middleware('permission:students.changes.approve')->name('student-change-requests.index');
+
         // Administration
         Route::prefix('admin')->group(function (): void {
             Route::middleware('permission:identity.users.view')->group(function (): void {
@@ -104,7 +113,7 @@ Route::middleware(['campus.auth'])->group(function (): void {
             Route::livewire('templates', Admin\Templates\Index::class)->middleware('permission:communication.templates.manage,communication.deliveries.view')->name('templates.index');
             Route::livewire('audit', Admin\Audit\Index::class)->middleware('permission:admin.audit.view,identity.security_events.view')->name('audit.index');
             Route::get('audit/export', AuditExportController::class)->middleware('permission:admin.audit.export')->name('audit.export');
-            Route::livewire('imports', Admin\Imports\Index::class)->middleware('permission:identity.users.import,hr.employees.import')->name('imports.index');
+            Route::livewire('imports', Admin\Imports\Index::class)->middleware('permission:identity.users.import,hr.employees.import,students.records.import')->name('imports.index');
             Route::livewire('health', Admin\Health\Index::class)->middleware('permission:admin.monitoring.view')->name('health.index');
         });
 

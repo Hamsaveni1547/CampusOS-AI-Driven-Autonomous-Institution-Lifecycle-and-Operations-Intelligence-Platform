@@ -39,6 +39,15 @@ return [
     ],
 
     [
+        'label' => 'Students',
+        'items' => [
+            ['label' => 'My student record', 'route' => 'my-record.show', 'icon' => 'id-card', 'roles' => ['student'], 'keywords' => 'profile register number documents'],
+            ['label' => 'Students', 'route' => 'students.index', 'icon' => 'graduation-cap', 'permissions' => ['students.records.view'], 'keywords' => 'usn register roll section'],
+            ['label' => 'Correction requests', 'route' => 'student-change-requests.index', 'icon' => 'file-pen', 'permissions' => ['students.changes.approve'], 'keywords' => 'profile changes'],
+        ],
+    ],
+
+    [
         'label' => 'People',
         'items' => [
             ['label' => 'Staff', 'route' => 'staff.index', 'icon' => 'briefcase', 'permissions' => ['hr.employees.view'], 'keywords' => 'employees faculty'],
@@ -62,7 +71,7 @@ return [
             ['label' => 'Settings', 'route' => 'settings.index', 'icon' => 'settings', 'permissions' => ['admin.settings.view']],
             ['label' => 'Notification templates', 'route' => 'templates.index', 'icon' => 'mail', 'permissions' => ['communication.templates.manage']],
             ['label' => 'Audit log', 'route' => 'audit.index', 'icon' => 'scroll-text', 'permissions' => ['admin.audit.view', 'identity.security_events.view']],
-            ['label' => 'Imports', 'route' => 'imports.index', 'icon' => 'file-up', 'permissions' => ['identity.users.import', 'hr.employees.import']],
+            ['label' => 'Imports', 'route' => 'imports.index', 'icon' => 'file-up', 'permissions' => ['identity.users.import', 'hr.employees.import', 'students.records.import']],
             ['label' => 'System health', 'route' => 'health.index', 'icon' => 'activity', 'permissions' => ['admin.monitoring.view']],
         ],
     ],
