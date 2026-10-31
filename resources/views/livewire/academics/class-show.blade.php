@@ -6,6 +6,7 @@
         <x-slot:actions>
             @if ($class['can_teach'])
                 <x-ui.button variant="secondary" icon="user-check" :href="route('attendance.class', $class['id'])">{{ __('Attendance') }}</x-ui.button>
+                <x-ui.button variant="secondary" icon="clipboard-list" :href="route('assessment.class', $class['id'])">{{ __('Marks') }}</x-ui.button>
                 <x-ui.button icon="upload" wire:click="openMaterial">{{ __('Share material') }}</x-ui.button>
             @endif
         </x-slot:actions>

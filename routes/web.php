@@ -11,6 +11,7 @@ use App\Livewire\Account\Security;
 use App\Livewire\Account\StaffProfile;
 use App\Livewire\Admin;
 use App\Livewire\Admissions;
+use App\Livewire\Assessment;
 use App\Livewire\Attendance;
 use App\Livewire\Auth\ForgotPassword;
 use App\Livewire\Auth\Login;
@@ -116,6 +117,13 @@ Route::middleware(['campus.auth'])->group(function (): void {
         Route::livewire('my-attendance', Attendance\MyAttendance::class)->name('my-attendance.show');
         Route::livewire('attendance-shortage', Attendance\Shortage::class)->middleware('permission:attendance.reports.view')->name('attendance-shortage.index');
         Route::livewire('attendance-corrections', Attendance\Corrections::class)->middleware('permission:attendance.corrections.approve')->name('attendance-corrections.index');
+
+        // Assessment (class pages check access in the API)
+        Route::livewire('marks/classes/{class}', Assessment\ClassMarks::class)->name('assessment.class');
+        Route::livewire('marks/classes/{class}/assignments', Assessment\ClassAssignments::class)->name('assessment.assignments');
+        Route::livewire('internal-marks-approval', Assessment\Approvals::class)->middleware('permission:assessment.marks.verify,assessment.marks.lock,assessment.corrections.approve')->name('assessment.approvals');
+        Route::livewire('my-marks', Assessment\MyMarks::class)->name('my-marks.show');
+        Route::livewire('my-assignments', Assessment\MyAssignments::class)->name('my-assignments.index');
 
         // Timetable
         Route::livewire('my-timetable', Timetable\MyTimetable::class)->name('my-timetable.show');
