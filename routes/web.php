@@ -23,6 +23,7 @@ use App\Livewire\Auth\SetupAccount;
 use App\Livewire\Auth\TwoStepChallenge;
 use App\Livewire\Auth\VerifyEmail;
 use App\Livewire\Calendar;
+use App\Livewire\Exams;
 use App\Livewire\Home;
 use App\Livewire\Hr;
 use App\Livewire\Notifications;
@@ -124,6 +125,15 @@ Route::middleware(['campus.auth'])->group(function (): void {
         Route::livewire('internal-marks-approval', Assessment\Approvals::class)->middleware('permission:assessment.marks.verify,assessment.marks.lock,assessment.corrections.approve')->name('assessment.approvals');
         Route::livewire('my-marks', Assessment\MyMarks::class)->name('my-marks.show');
         Route::livewire('my-assignments', Assessment\MyAssignments::class)->name('my-assignments.index');
+
+        // Examinations (cycle pages check access in the API)
+        Route::livewire('exam-cycles', Exams\Cycles::class)->middleware('permission:exams.cycles.manage,exams.reports.view,exams.evaluation.enter,exams.results.process,exams.results.verify,exams.results.publish')->name('exam-cycles.index');
+        Route::livewire('exam-cycles/{cycle}', Exams\CycleShow::class)->name('exam-cycles.show');
+        Route::livewire('exam-marks/{schedule}', Exams\MarksEntry::class)->middleware('permission:exams.evaluation.enter')->name('exam-marks.edit');
+        Route::livewire('revaluation', Exams\Revaluations::class)->middleware('permission:exams.revaluation.manage')->name('revaluations.index');
+        Route::livewire('my-exams', Exams\MyExams::class)->name('my-exams.index');
+        Route::livewire('my-exams/{cycle}/hall-ticket', Exams\HallTicket::class)->name('hall-ticket.show');
+        Route::livewire('my-results', Exams\MyResults::class)->name('my-results.show');
 
         // Timetable
         Route::livewire('my-timetable', Timetable\MyTimetable::class)->name('my-timetable.show');
