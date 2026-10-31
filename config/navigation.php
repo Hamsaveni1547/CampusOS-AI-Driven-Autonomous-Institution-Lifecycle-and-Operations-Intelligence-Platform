@@ -30,6 +30,15 @@ return [
     ],
 
     [
+        'label' => 'Admissions',
+        'items' => [
+            ['label' => 'My applications', 'route' => 'my-applications.index', 'icon' => 'file-pen', 'roles' => ['applicant'], 'keywords' => 'apply admission'],
+            ['label' => 'Applications', 'route' => 'applications.index', 'icon' => 'inbox', 'permissions' => ['admissions.applications.view'], 'keywords' => 'admissions desk verification'],
+            ['label' => 'Admission cycles', 'route' => 'admission-cycles.index', 'icon' => 'calendar-range', 'permissions' => ['admissions.cycles.manage'], 'keywords' => 'seats quota intake'],
+        ],
+    ],
+
+    [
         'label' => 'People',
         'items' => [
             ['label' => 'Staff', 'route' => 'staff.index', 'icon' => 'briefcase', 'permissions' => ['hr.employees.view'], 'keywords' => 'employees faculty'],

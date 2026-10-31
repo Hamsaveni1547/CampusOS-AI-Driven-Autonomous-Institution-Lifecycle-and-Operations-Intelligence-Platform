@@ -83,4 +83,26 @@ class Lookups
             ->map(fn (array $e) => ['value' => $e['id'], 'label' => $e['name'], 'description' => $e['employee_code']])
             ->values()->all();
     }
+
+    /**
+     * Admission option lists from the API as value => label: quotas, statuses, categories.
+     *
+     * @return array<string, string>
+     */
+    public function admissionOptions(string $list): array
+    {
+        $options = (array) $this->api->get('admissions/options', memoize: true)->data($list, []);
+
+        return collect($options)->mapWithKeys(fn (array $option) => [$option['value'] => $option['label']])->all();
+    }
+
+    /**
+     * Academic years as id => name (newest first).
+     *
+     * @return array<string, string>
+     */
+    public function academicYears(): array
+    {
+        return collect($this->api->endpoint('academic-years')->all())->mapWithKeys(fn (array $year) => [$year['id'] => $year['name']])->all();
+    }
 }

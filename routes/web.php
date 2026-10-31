@@ -9,6 +9,7 @@ use App\Livewire\Account\Profile;
 use App\Livewire\Account\Security;
 use App\Livewire\Account\StaffProfile;
 use App\Livewire\Admin;
+use App\Livewire\Admissions;
 use App\Livewire\Auth\ForgotPassword;
 use App\Livewire\Auth\Login;
 use App\Livewire\Auth\Register;
@@ -78,6 +79,18 @@ Route::middleware(['campus.auth'])->group(function (): void {
             Route::livewire('staff/{employee}', Hr\Staff\Show::class)->name('staff.show');
         });
         Route::livewire('designations', Hr\Designations\Index::class)->middleware('permission:hr.designations.manage')->name('designations.index');
+
+        // Admissions: applicants see only their own applications (checked by the API).
+        Route::livewire('my-applications', Admissions\MyApplications\Index::class)->name('my-applications.index');
+        Route::livewire('my-applications/{application}', Admissions\MyApplications\Show::class)->name('my-applications.show');
+        Route::middleware('permission:admissions.applications.view')->group(function (): void {
+            Route::livewire('applications', Admissions\Applications\Index::class)->name('applications.index');
+            Route::livewire('applications/{application}', Admissions\Applications\Show::class)->name('applications.show');
+        });
+        Route::middleware('permission:admissions.cycles.manage')->group(function (): void {
+            Route::livewire('admission-cycles', Admissions\Cycles\Index::class)->name('admission-cycles.index');
+            Route::livewire('admission-cycles/{cycle}', Admissions\Cycles\Show::class)->name('admission-cycles.show');
+        });
 
         // Administration
         Route::prefix('admin')->group(function (): void {
