@@ -31,6 +31,10 @@ use App\Livewire\Home;
 use App\Livewire\Hr;
 use App\Livewire\Leave;
 use App\Livewire\Library;
+use App\Livewire\Mentoring\Allocation;
+use App\Livewire\Mentoring\MenteeShow;
+use App\Livewire\Mentoring\MyMentees;
+use App\Livewire\Mentoring\MyMentor;
 use App\Livewire\Notifications;
 use App\Livewire\Payroll;
 use App\Livewire\Platform;
@@ -180,6 +184,12 @@ Route::middleware(['campus.auth'])->group(function (): void {
         Route::livewire('complaints', Feedback\Complaints::class)->middleware('permission:feedback.complaints.handle,feedback.complaints.restricted')->name('complaints.index');
         Route::livewire('complaints/{complaint}', Feedback\ComplaintShow::class)->name('complaints.show');
         Route::livewire('my-complaints', Feedback\MyComplaints::class)->name('my-complaints.index');
+
+        // Mentoring (mentee pages check access in the API)
+        Route::livewire('mentoring', Allocation::class)->middleware('permission:mentoring.allocate,mentoring.reports.view')->name('mentoring.allocation');
+        Route::livewire('my-mentees', MyMentees::class)->middleware('permission:mentoring.mentor')->name('my-mentees.index');
+        Route::livewire('mentees/{student}', MenteeShow::class)->name('mentees.show');
+        Route::livewire('my-mentor', MyMentor::class)->name('my-mentor.show');
 
         // Library (the catalogue is open to every signed-in member)
         Route::livewire('library', Library\Catalogue::class)->name('library.catalogue');
