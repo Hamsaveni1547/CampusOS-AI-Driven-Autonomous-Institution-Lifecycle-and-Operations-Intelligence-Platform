@@ -1,6 +1,13 @@
 @php($money = fn ($v) => '₹'.number_format((float) $v, 2))
 <div>
-    <x-ui.page-header :title="__('My fees')" :description="__('Pay at the accounts counter; your receipt appears here.')" />
+    <x-ui.page-header :title="__('My fees')" :description="__('Pay online or at the accounts counter; your receipt appears here.')">
+        <x-slot:actions>
+            @if ($account['totals']['balance'] > 0)
+                <x-ui.button icon="credit-card" wire:click="payOnline" loading="payOnline">{{ __('Pay :a online', ['a' => $money($account['totals']['balance'])]) }}</x-ui.button>
+            @endif
+        </x-slot:actions>
+    </x-ui.page-header>
+    @if ($formError)<x-ui.alert tone="danger" class="mb-4">{{ $formError }}</x-ui.alert>@endif
 
     <div class="mb-6 grid gap-4 sm:grid-cols-3">
         <x-ui.stat :label="__('Balance')" :value="$money($account['totals']['balance'])" icon="wallet" :tone="$account['totals']['overdue'] > 0 ? 'danger' : ($account['totals']['no_dues'] ? 'success' : 'warning')" :hint="$account['totals']['overdue'] > 0 ? __(':a overdue', ['a' => $money($account['totals']['overdue'])]) : null" />

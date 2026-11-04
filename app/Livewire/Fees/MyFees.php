@@ -17,6 +17,14 @@ class MyFees extends Component
 {
     use InteractsWithApi;
 
+    /**
+     * Starts an online payment for everything due and opens the payment page.
+     */
+    public function payOnline(): void
+    {
+        $this->callApi(fn () => $this->api()->post('me/online-payments'), onSuccess: fn ($response) => $this->redirectRoute('fees.pay', $response->data('id'), navigate: true));
+    }
+
     public function render(): View
     {
         $options = (array) $this->api()->get('finance/options', memoize: true)->data();

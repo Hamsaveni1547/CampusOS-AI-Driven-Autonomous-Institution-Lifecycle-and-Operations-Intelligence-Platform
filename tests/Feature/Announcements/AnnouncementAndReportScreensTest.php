@@ -27,7 +27,7 @@ class AnnouncementAndReportScreensTest extends TestCase
      */
     private function announcement(array $extra = []): array
     {
-        return ['id' => 'a1', 'title' => 'Lab moved to Friday', 'body' => 'The DBMS lab moves to Friday.', 'category' => 'academic', 'priority' => 'important', 'is_pinned' => false, 'requires_ack' => true, 'expires_on' => null, 'published_at' => '2026-11-04T10:00:00+05:30', 'from' => 'Kavya Shetty', ...$extra];
+        return ['id' => 'a1', 'title' => 'Lab moved to Friday', 'body' => 'The DBMS lab moves to Friday.', 'category' => 'academic', 'priority' => 'important', 'is_pinned' => false, 'requires_ack' => true, 'expires_on' => null, 'published_at' => '2026-11-04T10:00:00+05:30', 'publish_at' => null, 'from' => 'Kavya Shetty', ...$extra];
     }
 
     public function test_reader_sees_feed_and_acknowledges(): void

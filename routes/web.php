@@ -167,6 +167,7 @@ Route::middleware(['campus.auth'])->group(function (): void {
         Route::livewire('fees/setup', Fees\Setup::class)->middleware('permission:finance.structures.manage')->name('fees.setup');
         Route::livewire('fees/receipts/{payment}', Fees\Receipt::class)->name('fee-receipts.show');
         Route::livewire('my-fees', Fees\MyFees::class)->name('my-fees.show');
+        Route::livewire('my-fees/pay/{payment}', Fees\PayOnline::class)->name('fees.pay');
 
         // Payroll (payslips check access in the API: payroll staff, or the employee once finalised)
         Route::livewire('payroll', Payroll\Runs::class)->middleware('permission:payroll.reports.view')->name('payroll-runs.index');

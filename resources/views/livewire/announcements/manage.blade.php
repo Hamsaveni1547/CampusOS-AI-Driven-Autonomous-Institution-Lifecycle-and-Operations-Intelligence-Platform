@@ -23,8 +23,11 @@
                 <x-ui.td class="whitespace-nowrap text-right">
                     @if ($a['status'] === 'draft')
                         <x-ui.button size="sm" variant="ghost" wire:click="open(@js($a))">{{ __('Edit') }}</x-ui.button>
-                        <x-ui.button size="sm" icon="send" wire:click="publish('{{ $a['id'] }}')" wire:confirm="{{ __('Publish and notify everyone in the audience?') }}">{{ __('Publish') }}</x-ui.button>
+                        <x-ui.button size="sm" :icon="$a['publish_at'] ? 'clock' : 'send'" wire:click="publish('{{ $a['id'] }}')" wire:confirm="{{ $a['publish_at'] ? __('Schedule it to go out at the chosen time?') : __('Publish and notify everyone in the audience?') }}">{{ $a['publish_at'] ? __('Schedule') : __('Publish') }}</x-ui.button>
                         <x-ui.button size="sm" variant="ghost" icon="trash-2" wire:click="delete('{{ $a['id'] }}')" wire:confirm="{{ __('Delete this draft?') }}"><span class="sr-only">{{ __('Delete') }}</span></x-ui.button>
+                    @elseif ($a['status'] === 'scheduled')
+                        <span class="mr-2 text-xs text-ink-muted">{{ __('Goes out :d', ['d' => \App\Support\Format::dateTime($a['publish_at'])]) }}</span>
+                        <x-ui.button size="sm" variant="ghost" wire:click="withdraw('{{ $a['id'] }}')">{{ __('Cancel schedule') }}</x-ui.button>
                     @elseif ($a['status'] === 'published')
                         <x-ui.button size="sm" variant="ghost" wire:click="withdraw('{{ $a['id'] }}')" wire:confirm="{{ __('Withdraw this announcement? People will no longer see it.') }}">{{ __('Withdraw') }}</x-ui.button>
                     @endif
@@ -42,6 +45,7 @@
             <x-ui.select :label="__('Priority')" wire:model="form.priority" :options="['normal' => __('Normal'), 'important' => __('Important')]" required />
             <x-ui.select :label="__('Send to')" wire:model.live="form.audience_type" :options="$types" :placeholder="__('Choose…')" required />
             <x-ui.input type="date" :label="__('Show until')" wire:model="form.expires_on" optional />
+            <x-ui.input type="datetime-local" :label="__('Send later at')" wire:model="form.publish_at" optional :hint="__('Leave empty to send when you publish.')" />
 
             @if ($form['audience_type'] === 'sections')
                 <div class="sm:col-span-2"><x-ui.select :label="__('Batch')" wire:model.live="sectionBatch" :options="$batches" :placeholder="__('Choose batch…')" /></div>
