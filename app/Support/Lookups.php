@@ -148,6 +148,17 @@ class Lookups
     }
 
     /**
+     * Rooms and labs as id => "CODE · Name".
+     *
+     * @return array<string, string>
+     */
+    public function rooms(): array
+    {
+        return collect($this->api->endpoint('rooms')->page([], ['per_page' => 200])->items)
+            ->mapWithKeys(fn (array $room) => [$room['id'] => $room['code'].($room['name'] ? ' · '.$room['name'] : '')])->all();
+    }
+
+    /**
      * Active courses as id => "CODE · Title".
      *
      * @return array<string, string>

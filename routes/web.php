@@ -12,6 +12,7 @@ use App\Livewire\Account\StaffProfile;
 use App\Livewire\Admin;
 use App\Livewire\Admissions;
 use App\Livewire\Assessment;
+use App\Livewire\Assets;
 use App\Livewire\Attendance;
 use App\Livewire\Auth\ForgotPassword;
 use App\Livewire\Auth\Login;
@@ -24,6 +25,7 @@ use App\Livewire\Auth\TwoStepChallenge;
 use App\Livewire\Auth\VerifyEmail;
 use App\Livewire\Calendar;
 use App\Livewire\Exams;
+use App\Livewire\Feedback;
 use App\Livewire\Fees;
 use App\Livewire\Home;
 use App\Livewire\Hr;
@@ -164,6 +166,20 @@ Route::middleware(['campus.auth'])->group(function (): void {
         Route::livewire('my-leave', Leave\MyLeave::class)->name('my-leave.show');
         Route::livewire('leave/approvals', Leave\Approvals::class)->middleware('permission:leave.approve,leave.reports.view')->name('leave.approvals');
         Route::livewire('leave/setup', Leave\Setup::class)->middleware('permission:leave.manage')->name('leave.setup');
+
+        // Labs and assets
+        Route::livewire('assets', Assets\Register::class)->middleware('permission:assets.reports.view')->name('assets.index');
+        Route::livewire('maintenance', Assets\Maintenance::class)->name('maintenance.index');
+        Route::livewire('room-bookings', Assets\Bookings::class)->middleware('permission:assets.rooms.book,assets.reports.view')->name('room-bookings.index');
+
+        // Feedback and complaints (complaint pages check access in the API)
+        Route::livewire('surveys', Feedback\Surveys::class)->middleware('permission:feedback.surveys.manage,feedback.results.view')->name('surveys.index');
+        Route::livewire('surveys/{survey}/results', Feedback\SurveyResults::class)->middleware('permission:feedback.results.view')->name('surveys.results');
+        Route::livewire('give-feedback', Feedback\MySurveys::class)->name('my-surveys.index');
+        Route::livewire('my-feedback', Feedback\TeachingFeedback::class)->name('teaching-feedback.show');
+        Route::livewire('complaints', Feedback\Complaints::class)->middleware('permission:feedback.complaints.handle,feedback.complaints.restricted')->name('complaints.index');
+        Route::livewire('complaints/{complaint}', Feedback\ComplaintShow::class)->name('complaints.show');
+        Route::livewire('my-complaints', Feedback\MyComplaints::class)->name('my-complaints.index');
 
         // Library (the catalogue is open to every signed-in member)
         Route::livewire('library', Library\Catalogue::class)->name('library.catalogue');
