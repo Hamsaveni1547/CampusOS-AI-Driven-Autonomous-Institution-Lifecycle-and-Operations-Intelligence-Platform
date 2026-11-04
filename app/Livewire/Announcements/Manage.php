@@ -9,6 +9,8 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
 use Livewire\Component;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
+use Livewire\WithFileUploads;
 
 /**
  * Drafting, publishing and withdrawing announcements.
@@ -18,6 +20,10 @@ use Livewire\Component;
 class Manage extends Component
 {
     use InteractsWithApi;
+    use WithFileUploads;
+
+    /** @var array<int, TemporaryUploadedFile> files to attach on save */
+    public array $files = [];
 
     #[Url(except: '')]
     public string $status = '';
@@ -60,17 +66,19 @@ class Manage extends Component
             'requires_ack' => $announcement['requires_ack'], 'expires_on' => $announcement['expires_on'] ?? '',
             'publish_at' => isset($announcement['publish_at']) ? substr((string) $announcement['publish_at'], 0, 16) : '',
         ];
+        $this->files = [];
         $this->resetErrorBag();
         $this->dispatch('open-dialog', 'announcement-form');
     }
 
     public function save(): void
     {
-        $this->validate(['form.title' => 'required|string|max:200', 'form.body' => 'required|string', 'form.audience_type' => 'required|string']);
-        $data = [...$this->form, 'audience_ids' => array_values($this->form['audience_ids']), 'is_pinned' => (bool) $this->form['is_pinned'], 'requires_ack' => (bool) $this->form['requires_ack'], 'expires_on' => $this->form['expires_on'] ?: null, 'publish_at' => $this->form['publish_at'] ?: null];
+        $this->validate(['form.title' => 'required|string|max:200', 'form.body' => 'required|string', 'form.audience_type' => 'required|string', 'files' => 'array|max:5', 'files.*' => 'file|max:10240|mimes:jpg,jpeg,png,webp,pdf,doc,docx']);
+        $data = [...$this->form, 'attachment_ids' => array_values(array_map(fn (TemporaryUploadedFile $f): string => (string) $this->api()->upload($f, 'attachment')['id'], $this->files)), 'audience_ids' => array_values($this->form['audience_ids']), 'is_pinned' => (bool) $this->form['is_pinned'], 'requires_ack' => (bool) $this->form['requires_ack'], 'expires_on' => $this->form['expires_on'] ?: null, 'publish_at' => $this->form['publish_at'] ?: null];
         $fieldMap = collect(['title', 'body', 'category', 'priority', 'audience_type', 'audience_ids', 'expires_on', 'publish_at'])->mapWithKeys(fn (string $f) => [$f => 'form.'.$f])->all();
 
         $this->callApi(fn () => $this->editingId === '' ? $this->api()->post('announcements', $data) : $this->api()->put('announcements/'.$this->editingId, $data), fieldMap: $fieldMap, onSuccess: function (): void {
+            $this->files = [];
             $this->dispatch('close-dialog', 'announcement-form');
             $this->toast('success', __('Draft saved. Publish it when ready.'));
         });

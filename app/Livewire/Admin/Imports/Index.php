@@ -41,6 +41,7 @@ class Index extends Component
             'users' => $this->can('identity.users.import') ? __('Users') : null,
             'employees' => $this->can('hr.employees.import') ? __('Staff') : null,
             'students' => $this->can('students.records.import') ? __('Students') : null,
+            'library_books' => $this->can('library.catalogue.manage') ? __('Library books') : null,
         ]);
     }
 

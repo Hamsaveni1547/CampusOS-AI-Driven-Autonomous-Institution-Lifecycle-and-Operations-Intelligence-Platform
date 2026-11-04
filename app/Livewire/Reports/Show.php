@@ -58,6 +58,7 @@ class Show extends Component
 
         return response()->streamDownload(function () use ($report, $columns): void {
             $out = fopen('php://output', 'w');
+            fwrite($out, "\xEF\xBB\xBF"); // so Excel shows ₹ and Indian-language names correctly
             fputcsv($out, array_column($columns, 'label'));
             foreach ($report['rows'] as $row) {
                 fputcsv($out, array_map(fn (array $c) => $row[$c['key']] ?? '', $columns));

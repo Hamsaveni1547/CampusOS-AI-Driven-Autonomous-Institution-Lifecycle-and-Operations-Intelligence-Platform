@@ -10,6 +10,7 @@
     <div class="grid gap-6 lg:grid-cols-3">
         <x-ui.card class="lg:col-span-2">
             <div class="whitespace-pre-line text-sm leading-relaxed text-ink">{{ $a['body'] }}</div>
+            <x-attachments :files="$a['attachments'] ?? []" class="mt-4" />
             @if ($a['requires_ack'] && $a['read_at'] !== null)
                 <div class="mt-6 border-t border-line pt-4">
                     @if ($a['acknowledged_at'])

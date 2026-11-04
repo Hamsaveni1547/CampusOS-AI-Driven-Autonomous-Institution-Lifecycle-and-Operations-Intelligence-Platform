@@ -59,6 +59,7 @@
             @endif
             @error('form.audience_ids')<p class="text-sm text-danger sm:col-span-2">{{ $message }}</p>@enderror
 
+            <x-file-picker model="files" :files="$files" :label="__('Attach circular or photos')" class="sm:col-span-2" />
             <x-ui.switch wire:model="form.is_pinned" :label="__('Pin to the top')" />
             <x-ui.switch wire:model="form.requires_ack" :label="__('Ask people to acknowledge')" />
             @if ($formError)<x-ui.alert tone="danger" class="sm:col-span-2">{{ $formError }}</x-ui.alert>@endif

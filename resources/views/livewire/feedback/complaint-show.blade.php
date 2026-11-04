@@ -8,6 +8,7 @@
 
     <x-ui.card class="mb-6">
         <p class="whitespace-pre-line text-sm text-ink">{{ $c['description'] }}</p>
+        <x-attachments :files="$c['attachments'] ?? []" class="mt-3" />
         <p class="mt-3 text-xs text-ink-muted">
             {{ $c['can_handle'] ? ($c['is_anonymous'] ? __('Raised anonymously') : __('Raised by :n', ['n' => $c['raised_by']])) : ($c['is_anonymous'] ? __('Your name is hidden from staff.') : '') }}
             @if ($c['assigned_to']) · {{ __('With :n', ['n' => $c['assigned_to']]) }}@endif

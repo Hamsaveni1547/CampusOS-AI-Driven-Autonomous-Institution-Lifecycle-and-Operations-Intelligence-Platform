@@ -27,6 +27,19 @@
                 @unless ($marks['editable'])
                     <x-ui.alert class="mb-4" tone="info">{{ __('Internal marks are submitted. To change a mark, ask for a correction.') }}</x-ui.alert>
                 @endunless
+                @if ($marks['editable'] && $marks['students'] !== [])
+                    <div class="mb-4 flex flex-wrap items-center gap-3 rounded-lg border border-dashed border-line px-4 py-3 text-sm">
+                        <x-ui.icon name="file-spreadsheet" class="size-5 text-ink-muted" />
+                        <span class="min-w-0 flex-1 text-ink-muted">{{ __('Have marks in a spreadsheet? Download the sheet, fill the marks column (AB for absent), and upload it to fill the grid.') }}</span>
+                        <x-ui.button size="sm" variant="secondary" icon="download" wire:click="downloadMarksTemplate">{{ __('Download sheet') }}</x-ui.button>
+                        <label class="inline-flex cursor-pointer items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-white hover:opacity-90">
+                            <x-ui.icon name="upload" class="size-3.5" />{{ __('Upload CSV') }}
+                            <input type="file" accept=".csv,text/csv" wire:model="marksCsv" class="sr-only" />
+                        </label>
+                        <span wire:loading wire:target="marksCsv" class="text-xs text-ink-muted">{{ __('Reading…') }}</span>
+                    </div>
+                    @error('marksCsv')<p class="mb-3 text-sm text-danger">{{ $message }}</p>@enderror
+                @endif
                 <form wire:submit="saveMarks">
                     <x-ui.table :empty="$marks['students'] === []">
                         <x-slot:head>

@@ -8,6 +8,9 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\Url;
 use Livewire\Component;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
+use Livewire\WithFileUploads;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * One class's internal assessment: scheme, marks entry, internal marks with approval, and outcome attainment.
@@ -16,6 +19,10 @@ use Livewire\Component;
 class ClassMarks extends Component
 {
     use InteractsWithApi;
+    use WithFileUploads;
+
+    /** Spreadsheet (CSV) of marks to fill the grid from. */
+    public ?TemporaryUploadedFile $marksCsv = null;
 
     #[Locked]
     public string $classId = '';
@@ -137,6 +144,83 @@ class ClassMarks extends Component
     }
 
     // ----- marks -----------------------------------------------------------
+
+    /**
+     * Sheet to fill in a spreadsheet: register_no, name, marks (blank, a number, or AB for absent).
+     */
+    public function downloadMarksTemplate(): StreamedResponse
+    {
+        $marks = $this->marksData();
+
+        return response()->streamDownload(function () use ($marks): void {
+            $out = fopen('php://output', 'w');
+            fwrite($out, "\xEF\xBB\xBF");
+            fputcsv($out, ['register_no', 'name', 'marks']);
+            foreach ($marks['students'] as $s) {
+                fputcsv($out, [$s['register_no'], $s['name'], $s['status'] === 'absent' ? 'AB' : ($s['marks'] ?? '')]);
+            }
+            fclose($out);
+        }, 'marks-'.str($marks['assessment']['name'] ?? 'assessment')->slug().'.csv', ['Content-Type' => 'text/csv']);
+    }
+
+    /**
+     * Fills the marks grid from an uploaded sheet. Nothing is saved until "Save marks".
+     */
+    public function updatedMarksCsv(): void
+    {
+        $this->validate(['marksCsv' => 'required|file|mimes:csv,txt|max:1024']);
+        $marks = $this->marksData();
+        $byRegister = collect($marks['students'])->mapWithKeys(fn (array $s) => [mb_strtoupper(trim($s['register_no'])) => $s['id']]);
+        $max = (float) $marks['assessment']['max_marks'];
+
+        $text = preg_replace('/^\xEF\xBB\xBF/', '', (string) file_get_contents($this->marksCsv->getRealPath()));
+        $rows = array_map('str_getcsv', preg_split('/\R/', trim((string) $text)) ?: []);
+        $header = array_map(fn ($h) => mb_strtolower(trim((string) $h)), array_shift($rows) ?? []);
+        $registerCol = array_search('register_no', $header, true);
+        $marksCol = array_search('marks', $header, true);
+        $this->marksCsv = null;
+
+        if ($registerCol === false || $marksCol === false) {
+            $this->toast('error', __('The sheet needs register_no and marks columns.'));
+
+            return;
+        }
+
+        [$filled, $problems] = [0, []];
+        foreach ($rows as $i => $row) {
+            $register = mb_strtoupper(trim((string) ($row[$registerCol] ?? '')));
+            $value = trim((string) ($row[$marksCol] ?? ''));
+            if ($register === '' || $value === '') {
+                continue;
+            }
+            $studentId = $byRegister->get($register);
+            if ($studentId === null) {
+                $problems[] = __('Row :r: :n is not in this class', ['r' => $i + 2, 'n' => $register]);
+
+                continue;
+            }
+            if (in_array(mb_strtoupper($value), ['AB', 'ABSENT', 'A'], true)) {
+                $this->entries[$studentId] = ['marks' => null, 'status' => 'absent'];
+            } elseif (is_numeric($value) && (float) $value >= 0 && (float) $value <= $max) {
+                $this->entries[$studentId] = ['marks' => (float) $value, 'status' => 'present'];
+            } else {
+                $problems[] = __('Row :r: ":v" is not a valid mark (0–:m or AB)', ['r' => $i + 2, 'v' => $value, 'm' => $max]);
+
+                continue;
+            }
+            $filled++;
+        }
+
+        $this->toast($problems === [] ? 'success' : 'warning', __(':n marks filled from the sheet. Check them and click Save marks.', ['n' => $filled]), implode('; ', array_slice($problems, 0, 5)) ?: null);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function marksData(): array
+    {
+        return (array) $this->api()->withoutCache(fn () => $this->api()->get('assessments/'.$this->assessmentId.'/marks', ['class' => $this->classId]))->data();
+    }
 
     public function saveMarks(): void
     {

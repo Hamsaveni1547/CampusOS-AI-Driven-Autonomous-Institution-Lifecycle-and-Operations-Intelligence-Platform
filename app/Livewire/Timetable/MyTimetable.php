@@ -22,6 +22,14 @@ class MyTimetable extends Component
     #[Url(as: 'date', except: '')]
     public string $date = '';
 
+    /** Private calendar-feed link, shown after "Add to my calendar". */
+    public string $calendarUrl = '';
+
+    public function calendarLink(): void
+    {
+        $this->callApi(fn () => $this->api()->get('me/timetable/calendar-link'), onSuccess: fn ($response) => $this->calendarUrl = (string) $response->data('url'));
+    }
+
     public function shiftDay(int $by): void
     {
         $this->date = Carbon::parse($this->date !== '' ? $this->date : now()->toDateString())->addDays($by)->toDateString();

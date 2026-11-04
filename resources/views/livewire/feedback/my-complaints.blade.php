@@ -19,6 +19,7 @@
             <x-ui.select :label="__('Category')" wire:model="form.category_id" :options="$categories" :placeholder="__('Choose…')" required />
             <x-ui.input :label="__('Subject')" wire:model="form.subject" required />
             <x-ui.textarea :label="__('Details')" wire:model="form.description" rows="4" required />
+            <x-file-picker model="files" :files="$files" :label="__('Photos or documents')" />
             <x-ui.switch wire:model="form.anonymous" :label="__('Hide my name from staff')" />
             @if ($formError)<x-ui.alert tone="danger">{{ $formError }}</x-ui.alert>@endif
         </form>

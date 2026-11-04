@@ -118,7 +118,7 @@ return [
             ['label' => 'Settings', 'route' => 'settings.index', 'icon' => 'settings', 'permissions' => ['admin.settings.view']],
             ['label' => 'Notification templates', 'route' => 'templates.index', 'icon' => 'mail', 'permissions' => ['communication.templates.manage']],
             ['label' => 'Audit log', 'route' => 'audit.index', 'icon' => 'scroll-text', 'permissions' => ['admin.audit.view', 'identity.security_events.view']],
-            ['label' => 'Imports', 'route' => 'imports.index', 'icon' => 'file-up', 'permissions' => ['identity.users.import', 'hr.employees.import', 'students.records.import']],
+            ['label' => 'Imports', 'route' => 'imports.index', 'icon' => 'file-up', 'permissions' => ['identity.users.import', 'hr.employees.import', 'students.records.import', 'library.catalogue.manage']],
             ['label' => 'System health', 'route' => 'health.index', 'icon' => 'activity', 'permissions' => ['admin.monitoring.view']],
         ],
     ],

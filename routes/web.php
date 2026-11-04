@@ -235,7 +235,7 @@ Route::middleware(['campus.auth'])->group(function (): void {
             Route::livewire('templates', Admin\Templates\Index::class)->middleware('permission:communication.templates.manage,communication.deliveries.view')->name('templates.index');
             Route::livewire('audit', Admin\Audit\Index::class)->middleware('permission:admin.audit.view,identity.security_events.view')->name('audit.index');
             Route::get('audit/export', AuditExportController::class)->middleware('permission:admin.audit.export')->name('audit.export');
-            Route::livewire('imports', Admin\Imports\Index::class)->middleware('permission:identity.users.import,hr.employees.import,students.records.import')->name('imports.index');
+            Route::livewire('imports', Admin\Imports\Index::class)->middleware('permission:identity.users.import,hr.employees.import,students.records.import,library.catalogue.manage')->name('imports.index');
             Route::livewire('health', Admin\Health\Index::class)->middleware('permission:admin.monitoring.view')->name('health.index');
         });
 
