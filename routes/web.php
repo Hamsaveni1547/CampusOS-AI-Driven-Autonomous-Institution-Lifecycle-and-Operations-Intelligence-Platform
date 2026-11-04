@@ -24,6 +24,7 @@ use App\Livewire\Auth\TwoStepChallenge;
 use App\Livewire\Auth\VerifyEmail;
 use App\Livewire\Calendar;
 use App\Livewire\Exams;
+use App\Livewire\Fees;
 use App\Livewire\Home;
 use App\Livewire\Hr;
 use App\Livewire\Notifications;
@@ -140,6 +141,14 @@ Route::middleware(['campus.auth'])->group(function (): void {
         Route::livewire('question-bank', QuestionBank\Questions::class)->middleware('permission:qbank.questions.contribute,qbank.questions.manage,qbank.papers.set,qbank.papers.review')->name('question-bank.index');
         Route::livewire('question-papers', QuestionBank\Papers::class)->middleware('permission:qbank.papers.set,qbank.papers.review,qbank.papers.seal,qbank.papers.release,qbank.logs.view')->name('question-papers.index');
         Route::livewire('question-papers/{paper}', QuestionBank\PaperShow::class)->middleware('permission:qbank.papers.set,qbank.papers.review,qbank.papers.seal,qbank.papers.release,qbank.logs.view')->name('question-papers.show');
+
+        // Fees (receipts check access in the API: staff, or the student who paid)
+        Route::livewire('fees/collect', Fees\Collect::class)->middleware('permission:finance.payments.collect,finance.reports.view')->name('fees.collect');
+        Route::livewire('fees/reports', Fees\Reports::class)->middleware('permission:finance.reports.view')->name('fees.reports');
+        Route::livewire('fees/concessions', Fees\Concessions::class)->middleware('permission:finance.concessions.approve,finance.demands.manage')->name('fees.concessions');
+        Route::livewire('fees/setup', Fees\Setup::class)->middleware('permission:finance.structures.manage')->name('fees.setup');
+        Route::livewire('fees/receipts/{payment}', Fees\Receipt::class)->name('fee-receipts.show');
+        Route::livewire('my-fees', Fees\MyFees::class)->name('my-fees.show');
 
         // Timetable
         Route::livewire('my-timetable', Timetable\MyTimetable::class)->name('my-timetable.show');

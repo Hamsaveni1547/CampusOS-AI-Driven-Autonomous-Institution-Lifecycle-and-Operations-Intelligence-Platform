@@ -1,0 +1,1 @@
+Add M11 fee screens: fee setup (heads and structures, raising fees), a fee counter to find a student, take payments, add charges, ask for concessions and cancel receipts, printable receipts, concession approvals, dues and collection reports, and students' own fees.
