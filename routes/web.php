@@ -11,6 +11,9 @@ use App\Livewire\Account\Security;
 use App\Livewire\Account\StaffProfile;
 use App\Livewire\Admin;
 use App\Livewire\Admissions;
+use App\Livewire\Announcements\Feed;
+use App\Livewire\Announcements\Manage;
+use App\Livewire\Announcements\Show;
 use App\Livewire\Assessment;
 use App\Livewire\Assets;
 use App\Livewire\Attendance;
@@ -39,6 +42,7 @@ use App\Livewire\Notifications;
 use App\Livewire\Payroll;
 use App\Livewire\Platform;
 use App\Livewire\QuestionBank;
+use App\Livewire\Reports\Index;
 use App\Livewire\Students;
 use App\Livewire\Timetable;
 use Illuminate\Support\Facades\Route;
@@ -73,6 +77,11 @@ Route::middleware(['campus.auth'])->group(function (): void {
         Route::livewire('/', Home::class)->name('home');
         Route::livewire('notifications', Notifications::class)->name('notifications.index');
         Route::livewire('calendar', Calendar::class)->name('calendar.index');
+        Route::livewire('announcements', Feed::class)->name('announcements.index');
+        Route::livewire('announcements/manage', Manage::class)->middleware('permission:communication.announcements.publish,communication.announcements.publish_all')->name('announcements.manage');
+        Route::livewire('announcements/{announcement}', Show::class)->name('announcements.show');
+        Route::livewire('reports', Index::class)->name('reports.index');
+        Route::livewire('reports/{key}', App\Livewire\Reports\Show::class)->name('reports.show');
 
         Route::prefix('account')->name('account.')->group(function (): void {
             Route::livewire('/', Profile::class)->name('profile');

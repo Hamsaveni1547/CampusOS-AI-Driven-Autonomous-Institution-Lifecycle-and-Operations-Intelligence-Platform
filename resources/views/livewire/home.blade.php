@@ -13,6 +13,23 @@
         </x-ui.alert>
     @endif
 
+    @if ($cards !== [])
+        <div class="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            @foreach ($cards as $card)
+                @php
+                    $value = match (true) {
+                        $card['value'] === null => '—',
+                        $card['format'] === 'money' => '₹'.number_format((float) $card['value'], 0),
+                        $card['format'] === 'percent' => $card['value'].'%',
+                        default => $card['value'],
+                    };
+                @endphp
+                <x-ui.stat wire:key="dc-{{ $card['key'] }}" :label="__($card['label'])" :value="$value" :hint="$card['hint']" :href="$card['url']"
+                    :tone="$card['tone'] === 'neutral' ? 'primary' : $card['tone']" :icon="['danger' => 'circle-alert', 'warning' => 'bell', 'success' => 'circle-check'][$card['tone']] ?? 'chart-column'" />
+            @endforeach
+        </div>
+    @endif
+
     <div class="grid gap-6 lg:grid-cols-3">
         <div class="space-y-6 lg:col-span-2">
             <x-ui.card :title="__('Latest notifications')" :padding="false">

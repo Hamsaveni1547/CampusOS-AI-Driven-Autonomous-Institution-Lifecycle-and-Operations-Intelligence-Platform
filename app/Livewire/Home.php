@@ -19,6 +19,14 @@ class Home extends Component
 {
     use InteractsWithApi;
 
+    /** Screen names used by dashboard cards, mapped to routes. */
+    private const LINKS = [
+        'announcements' => 'announcements.index', 'my-attendance' => 'my-attendance.show', 'my-fees' => 'my-fees.show', 'my-results' => 'my-results.show',
+        'attendance' => 'attendance.take', 'my-mentees' => 'my-mentees.index', 'my-library' => 'my-library.show', 'students' => 'students.index',
+        'reports' => 'reports.index', 'leave-approvals' => 'leave.approvals', 'applications' => 'applications.index', 'complaints' => 'complaints.index',
+        'library-desk' => 'library.desk', 'maintenance' => 'maintenance.index',
+    ];
+
     public function render(): View
     {
         $api = $this->api();
@@ -26,7 +34,11 @@ class Home extends Component
         $notifications = $api->me()->notifications()->items;
         $events = $api->endpoint('calendar-events')->all(['from' => now()->toDateString(), 'to' => now()->addDays(30)->toDateString()]);
 
+        $cards = collect((array) ($api->withoutCache(fn () => $api->get('me/dashboard'))->data()['cards'] ?? []))
+            ->map(fn (array $card): array => [...$card, 'url' => isset(self::LINKS[$card['link'] ?? '']) ? route(self::LINKS[$card['link']]) : null])->all();
+
         return view('livewire.home', [
+            'cards' => $cards,
             'term' => $context['term'] ?? null,
             'year' => $context['academic_year'] ?? null,
             'notifications' => array_slice($notifications, 0, 5),

@@ -87,6 +87,7 @@ abstract class TestCase extends BaseTestCase
                 'term' => ['id' => 't1', 'name' => 'Odd Semester 2026', 'type' => 'odd', 'academic_year' => ['id' => 'y1', 'name' => '2026-27']],
             ]]),
             self::API.'calendar-events*' => Http::response(['data' => []]),
+            self::API.'me/dashboard' => Http::response(['data' => ['cards' => []]]),
         ], $extra));
     }
 

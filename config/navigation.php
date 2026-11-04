@@ -16,6 +16,8 @@ return [
             ['label' => 'Home', 'route' => 'home', 'icon' => 'house'],
             ['label' => 'Notifications', 'route' => 'notifications.index', 'icon' => 'bell'],
             ['label' => 'Calendar', 'route' => 'calendar.index', 'icon' => 'calendar-days', 'keywords' => 'holidays events'],
+            ['label' => 'Announcements', 'route' => 'announcements.index', 'icon' => 'megaphone', 'keywords' => 'circular notice'],
+            ['label' => 'Reports', 'route' => 'reports.index', 'icon' => 'file-chart-column', 'permissions' => ['finance.reports.view', 'exams.reports.view', 'admissions.applications.view', 'hr.employees.view', 'leave.reports.view', 'library.reports.view', 'feedback.complaints.handle'], 'keywords' => 'report export csv'],
         ],
     ],
 
