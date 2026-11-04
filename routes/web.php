@@ -28,6 +28,7 @@ use App\Livewire\Fees;
 use App\Livewire\Home;
 use App\Livewire\Hr;
 use App\Livewire\Notifications;
+use App\Livewire\Payroll;
 use App\Livewire\Platform;
 use App\Livewire\QuestionBank;
 use App\Livewire\Students;
@@ -149,6 +150,13 @@ Route::middleware(['campus.auth'])->group(function (): void {
         Route::livewire('fees/setup', Fees\Setup::class)->middleware('permission:finance.structures.manage')->name('fees.setup');
         Route::livewire('fees/receipts/{payment}', Fees\Receipt::class)->name('fee-receipts.show');
         Route::livewire('my-fees', Fees\MyFees::class)->name('my-fees.show');
+
+        // Payroll (payslips check access in the API: payroll staff, or the employee once finalised)
+        Route::livewire('payroll', Payroll\Runs::class)->middleware('permission:payroll.reports.view')->name('payroll-runs.index');
+        Route::livewire('payroll/runs/{run}', Payroll\RunShow::class)->middleware('permission:payroll.reports.view')->name('payroll-runs.show');
+        Route::livewire('payroll/salaries', Payroll\Salaries::class)->middleware('permission:payroll.reports.view')->name('payroll.salaries');
+        Route::livewire('payslips/{payslip}', Payroll\PayslipShow::class)->name('payslips.show');
+        Route::livewire('my-payslips', Payroll\MyPayslips::class)->name('my-payslips.index');
 
         // Timetable
         Route::livewire('my-timetable', Timetable\MyTimetable::class)->name('my-timetable.show');
