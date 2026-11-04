@@ -1,0 +1,1 @@
+Add M14 and M15 screens: My leave (balances, apply, cancel), staff leave approvals with who is on leave today, leave setup with yearly allotment; library catalogue with copies, circulation desk (issue, return, overdue, fines) and My library with renewals.

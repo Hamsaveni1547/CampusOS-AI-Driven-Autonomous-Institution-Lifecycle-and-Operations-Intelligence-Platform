@@ -27,6 +27,8 @@ use App\Livewire\Exams;
 use App\Livewire\Fees;
 use App\Livewire\Home;
 use App\Livewire\Hr;
+use App\Livewire\Leave;
+use App\Livewire\Library;
 use App\Livewire\Notifications;
 use App\Livewire\Payroll;
 use App\Livewire\Platform;
@@ -157,6 +159,16 @@ Route::middleware(['campus.auth'])->group(function (): void {
         Route::livewire('payroll/salaries', Payroll\Salaries::class)->middleware('permission:payroll.reports.view')->name('payroll.salaries');
         Route::livewire('payslips/{payslip}', Payroll\PayslipShow::class)->name('payslips.show');
         Route::livewire('my-payslips', Payroll\MyPayslips::class)->name('my-payslips.index');
+
+        // Leave
+        Route::livewire('my-leave', Leave\MyLeave::class)->name('my-leave.show');
+        Route::livewire('leave/approvals', Leave\Approvals::class)->middleware('permission:leave.approve,leave.reports.view')->name('leave.approvals');
+        Route::livewire('leave/setup', Leave\Setup::class)->middleware('permission:leave.manage')->name('leave.setup');
+
+        // Library (the catalogue is open to every signed-in member)
+        Route::livewire('library', Library\Catalogue::class)->name('library.catalogue');
+        Route::livewire('library/desk', Library\Desk::class)->middleware('permission:library.circulation.manage,library.reports.view')->name('library.desk');
+        Route::livewire('my-library', Library\MyLibrary::class)->name('my-library.show');
 
         // Timetable
         Route::livewire('my-timetable', Timetable\MyTimetable::class)->name('my-timetable.show');
