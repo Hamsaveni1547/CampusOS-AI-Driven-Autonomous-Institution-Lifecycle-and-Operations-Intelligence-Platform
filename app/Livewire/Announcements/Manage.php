@@ -99,6 +99,46 @@ class Manage extends Component
         $this->callApi(fn () => $this->api()->delete('announcements/'.$id), onSuccess: fn () => $this->toast('success', __('Draft deleted')));
     }
 
+    // ----- AI writer ---------------------------------------------------------
+
+    /** One line describing the announcement, for "Write with AI". */
+    public string $aiIdea = '';
+
+    public string $aiTone = 'friendly';
+
+    /** Message before the last AI change, so it can be undone. */
+    public ?string $aiUndo = null;
+
+    public function aiDraft(): void
+    {
+        $this->validate(['aiIdea' => 'required|string|min:5|max:1000']);
+
+        $this->callApi(fn () => $this->api()->post('ai/announcements/draft', ['idea' => $this->aiIdea, 'tone' => $this->aiTone, 'audience' => $this->form['audience_type'] ?: null]), fieldMap: ['idea' => 'aiIdea'], onSuccess: function ($response): void {
+            $this->aiUndo = $this->form['body'];
+            $this->form['title'] = (string) $response->data('title');
+            $this->form['body'] = (string) $response->data('body');
+            $this->toast('success', __('Draft written. Check it before saving.'));
+        });
+    }
+
+    public function aiRewrite(string $mode): void
+    {
+        $this->validate(['form.body' => 'required|string|min:5']);
+
+        $this->callApi(fn () => $this->api()->post('ai/announcements/rewrite', ['text' => $this->form['body'], 'mode' => $mode]), onSuccess: function ($response): void {
+            $this->aiUndo = $this->form['body'];
+            $this->form['body'] = (string) $response->data('text');
+        });
+    }
+
+    public function aiUndoChange(): void
+    {
+        if ($this->aiUndo !== null) {
+            $this->form['body'] = $this->aiUndo;
+            $this->aiUndo = null;
+        }
+    }
+
     public function render(): View
     {
         $lookups = app(Lookups::class);

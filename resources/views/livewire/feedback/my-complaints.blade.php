@@ -16,9 +16,19 @@
 
     <x-ui.modal name="raise-complaint" :title="__('Raise a complaint')">
         <form wire:submit="raise" id="raise-complaint-form" class="space-y-4">
-            <x-ui.select :label="__('Category')" wire:model="form.category_id" :options="$categories" :placeholder="__('Choose…')" required />
             <x-ui.input :label="__('Subject')" wire:model="form.subject" required />
             <x-ui.textarea :label="__('Details')" wire:model="form.description" rows="4" required />
+            <div class="flex flex-wrap items-end gap-3">
+                <div class="min-w-0 flex-1"><x-ui.select :label="__('Category')" wire:model="form.category_id" :options="$categories" :placeholder="__('Choose…')" required /></div>
+                @if (app(\App\Support\AiFeatures::class)->on('complaints'))
+                    <x-ai.button size="md" class="mb-0.5" wire:click="suggestCategory" loading="suggestCategory">{{ __('Suggest category') }}</x-ai.button>
+                @endif
+            </div>
+            @if ($suggestion)
+                <p class="-mt-2 text-xs text-violet-700 dark:text-violet-300">
+                    <x-ui.icon name="sparkles" class="inline size-3" /> {{ __('Suggested: :c · :u urgency. :r', ['c' => $suggestion['category'] ?? '—', 'u' => \App\Support\Format::label($suggestion['urgency']), 'r' => $suggestion['reason']]) }}
+                </p>
+            @endif
             <x-file-picker model="files" :files="$files" :label="__('Photos or documents')" />
             <x-ui.switch wire:model="form.anonymous" :label="__('Hide my name from staff')" />
             @if ($formError)<x-ui.alert tone="danger">{{ $formError }}</x-ui.alert>@endif

@@ -19,9 +19,17 @@ class SurveyResults extends Component
     #[Locked]
     public string $surveyId = '';
 
+    /** @var array<string, mixed>|null AI insights from the written comments */
+    public ?array $insights = null;
+
     public function mount(string $survey): void
     {
         $this->surveyId = $survey;
+    }
+
+    public function analyse(): void
+    {
+        $this->callApi(fn () => $this->api()->get('ai/surveys/'.$this->surveyId.'/insights'), onSuccess: fn ($response) => $this->insights = (array) $response->data());
     }
 
     public function render(): View

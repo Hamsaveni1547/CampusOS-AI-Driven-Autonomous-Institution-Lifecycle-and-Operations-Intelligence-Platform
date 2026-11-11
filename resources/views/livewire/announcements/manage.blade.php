@@ -39,8 +39,29 @@
 
     <x-ui.modal name="announcement-form" :title="$editingId ? __('Edit draft') : __('New announcement')" size="lg">
         <form wire:submit="save" id="announcement-form-el" class="grid gap-4 sm:grid-cols-2">
+            @if (app(\App\Support\AiFeatures::class)->on('writing'))
+                <div class="rounded-lg border border-violet-200 bg-violet-50/60 p-3 sm:col-span-2 dark:border-violet-800 dark:bg-violet-950/30">
+                    <p class="mb-2 flex items-center gap-1.5 text-sm font-medium text-violet-800 dark:text-violet-300"><x-ui.icon name="wand-sparkles" class="size-4" />{{ __('Write with AI') }}</p>
+                    <div class="flex flex-wrap items-start gap-2">
+                        <div class="min-w-0 flex-1"><x-ui.input wire:model="aiIdea" :placeholder="__('e.g. Lab exams postponed to next Monday because of the power cut')" /></div>
+                        <div class="w-32"><x-ui.select wire:model="aiTone" :options="['friendly' => __('Friendly'), 'formal' => __('Formal'), 'urgent' => __('Urgent')]" /></div>
+                        <x-ai.button size="md" wire:click="aiDraft" loading="aiDraft">{{ __('Write') }}</x-ai.button>
+                    </div>
+                    @error('aiIdea')<p class="mt-1 text-xs text-danger">{{ $message }}</p>@enderror
+                </div>
+            @endif
             <x-ui.input :label="__('Title')" wire:model="form.title" required class="sm:col-span-2" />
             <x-ui.textarea :label="__('Message')" wire:model="form.body" rows="6" required class="sm:col-span-2" />
+            @if (app(\App\Support\AiFeatures::class)->on('writing'))
+                <div class="-mt-2 flex flex-wrap items-center gap-2 sm:col-span-2">
+                    <x-ai.button wire:click="aiRewrite('improve')" loading="aiRewrite">{{ __('Improve') }}</x-ai.button>
+                    <x-ai.button wire:click="aiRewrite('shorten')" loading="aiRewrite">{{ __('Shorten') }}</x-ai.button>
+                    <x-ai.button wire:click="aiRewrite('formal')" loading="aiRewrite">{{ __('Formal') }}</x-ai.button>
+                    <x-ai.button wire:click="aiRewrite('kannada')" loading="aiRewrite">{{ __('ಕನ್ನಡ') }}</x-ai.button>
+                    <x-ai.button wire:click="aiRewrite('english')" loading="aiRewrite">{{ __('English') }}</x-ai.button>
+                    @if ($aiUndo !== null)<button type="button" wire:click="aiUndoChange" class="text-xs text-ink-muted underline">{{ __('Undo AI change') }}</button>@endif
+                </div>
+            @endif
             <x-ui.select :label="__('Category')" wire:model="form.category" :options="$categories" required />
             <x-ui.select :label="__('Priority')" wire:model="form.priority" :options="['normal' => __('Normal'), 'important' => __('Important')]" required />
             <x-ui.select :label="__('Send to')" wire:model.live="form.audience_type" :options="$types" :placeholder="__('Choose…')" required />

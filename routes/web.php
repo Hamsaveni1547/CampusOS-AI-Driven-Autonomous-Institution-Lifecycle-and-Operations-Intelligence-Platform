@@ -13,6 +13,7 @@ use App\Livewire\Account\Security;
 use App\Livewire\Account\StaffProfile;
 use App\Livewire\Admin;
 use App\Livewire\Admissions;
+use App\Livewire\Ai\Usage;
 use App\Livewire\Announcements\Feed;
 use App\Livewire\Announcements\Manage;
 use App\Livewire\Announcements\Show;
@@ -242,6 +243,7 @@ Route::middleware(['campus.auth'])->group(function (): void {
             Route::livewire('audit', Admin\Audit\Index::class)->middleware('permission:admin.audit.view,identity.security_events.view')->name('audit.index');
             Route::get('audit/export', AuditExportController::class)->middleware('permission:admin.audit.export')->name('audit.export');
             Route::livewire('imports', Admin\Imports\Index::class)->middleware('permission:identity.users.import,hr.employees.import,students.records.import,library.catalogue.manage')->name('imports.index');
+            Route::livewire('ai-usage', Usage::class)->middleware('permission:ai.usage.view')->name('ai.usage');
             Route::livewire('health', Admin\Health\Index::class)->middleware('permission:admin.monitoring.view')->name('health.index');
         });
 

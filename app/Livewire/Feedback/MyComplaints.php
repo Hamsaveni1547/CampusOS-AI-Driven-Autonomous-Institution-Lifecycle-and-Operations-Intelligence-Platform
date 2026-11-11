@@ -30,8 +30,27 @@ class MyComplaints extends Component
     {
         $this->form = ['category_id' => '', 'subject' => '', 'description' => '', 'anonymous' => false];
         $this->files = [];
+        $this->suggestion = null;
         $this->resetErrorBag();
         $this->dispatch('open-dialog', 'raise-complaint');
+    }
+
+    /** @var array{category: string|null, urgency: string, reason: string}|null AI suggestion */
+    public ?array $suggestion = null;
+
+    /**
+     * AI picks the category (and urgency) from what the person wrote; they can still change it.
+     */
+    public function suggestCategory(): void
+    {
+        $this->validate(['form.subject' => 'required|string|max:200', 'form.description' => 'required|string|min:10|max:5000']);
+
+        $this->callApi(fn () => $this->api()->post('ai/complaints/suggest-category', ['subject' => $this->form['subject'], 'description' => $this->form['description']]), onSuccess: function ($response): void {
+            if ($response->data('category_id')) {
+                $this->form['category_id'] = (string) $response->data('category_id');
+            }
+            $this->suggestion = ['category' => $response->data('category'), 'urgency' => (string) $response->data('urgency'), 'reason' => (string) $response->data('reason')];
+        });
     }
 
     public function raise(): void

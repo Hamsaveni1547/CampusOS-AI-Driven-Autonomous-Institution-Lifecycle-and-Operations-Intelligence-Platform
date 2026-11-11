@@ -6,6 +6,23 @@
         @endif
     </x-ui.page-header>
 
+    @if ($c['can_handle'] && app(\App\Support\AiFeatures::class)->on('complaints'))
+        <div class="mb-6 rounded-lg border border-violet-200 bg-violet-50/60 p-4 dark:border-violet-800 dark:bg-violet-950/30">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="flex items-center gap-1.5 text-sm font-medium text-violet-800 dark:text-violet-300"><x-ui.icon name="sparkles" class="size-4" />{{ __('AI triage') }}</span>
+                <x-ai.button wire:click="aiTriage" loading="aiTriage">{{ $triage ? __('Refresh') : __('Summarise and suggest next step') }}</x-ai.button>
+            </div>
+            @if ($triage)
+                <div class="mt-3 grid gap-3 text-sm sm:grid-cols-3">
+                    <div class="sm:col-span-2"><p class="text-xs font-medium uppercase text-ink-subtle">{{ __('Summary') }}</p><p class="text-ink">{{ $triage['summary'] }}</p></div>
+                    <div><p class="text-xs font-medium uppercase text-ink-subtle">{{ __('Urgency') }}</p><x-ui.badge :tone="['high' => 'danger', 'medium' => 'warning'][$triage['urgency']] ?? 'neutral'">{{ \App\Support\Format::label($triage['urgency']) }}</x-ui.badge></div>
+                    <div class="sm:col-span-3"><p class="text-xs font-medium uppercase text-ink-subtle">{{ __('Suggested next step') }}</p><p class="text-ink">{{ $triage['next_step'] }}</p></div>
+                </div>
+                <p class="mt-2 text-[11px] text-ink-subtle">{{ __('AI suggestion only. The complainant’s name is never sent to AI.') }}</p>
+            @endif
+        </div>
+    @endif
+
     <x-ui.card class="mb-6">
         <p class="whitespace-pre-line text-sm text-ink">{{ $c['description'] }}</p>
         <x-attachments :files="$c['attachments'] ?? []" class="mt-3" />

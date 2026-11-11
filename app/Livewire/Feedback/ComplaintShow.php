@@ -65,6 +65,16 @@ class ComplaintShow extends Component
         return (array) $this->api()->withoutCache(fn () => $this->api()->get('complaints/'.$this->complaintId))->data();
     }
 
+    /** @var array{summary: string, urgency: string, next_step: string}|null AI triage for the handler */
+    public ?array $triage = null;
+
+    public function aiTriage(): void
+    {
+        $this->callApi(fn () => $this->api()->get('ai/complaints/'.$this->complaintId.'/triage'), onSuccess: fn ($response) => $this->triage = [
+            'summary' => (string) $response->data('summary'), 'urgency' => (string) $response->data('urgency'), 'next_step' => (string) $response->data('next_step'),
+        ]);
+    }
+
     public function render(): View
     {
         $complaint = $this->complaint();

@@ -24,6 +24,19 @@ class Show extends Component
         $this->announcementId = $announcement;
     }
 
+    /** @var list<string> AI summary points (language in $summaryLanguage) */
+    public array $summary = [];
+
+    public string $summaryLanguage = '';
+
+    public function summarise(string $language): void
+    {
+        $this->callApi(fn () => $this->api()->get('ai/announcements/'.$this->announcementId.'/summary', ['language' => $language === 'kn' ? 'kn' : 'en']), onSuccess: function ($response): void {
+            $this->summary = array_values((array) $response->data('points'));
+            $this->summaryLanguage = (string) $response->data('language');
+        });
+    }
+
     public function acknowledge(): void
     {
         $this->callApi(fn () => $this->api()->post('announcements/'.$this->announcementId.'/acknowledge'), onSuccess: fn () => $this->toast('success', __('Acknowledged')));

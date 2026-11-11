@@ -9,6 +9,21 @@
 
     <div class="grid gap-6 lg:grid-cols-3">
         <x-ui.card class="lg:col-span-2">
+            @if (app(\App\Support\AiFeatures::class)->on('writing'))
+                <div class="mb-4 rounded-lg border border-violet-200 bg-violet-50/60 p-3 dark:border-violet-800 dark:bg-violet-950/30">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="flex items-center gap-1.5 text-sm font-medium text-violet-800 dark:text-violet-300"><x-ui.icon name="sparkles" class="size-4" />{{ __('Quick summary') }}</span>
+                        <x-ai.button wire:click="summarise('en')" loading="summarise">English</x-ai.button>
+                        <x-ai.button wire:click="summarise('kn')" loading="summarise">ಕನ್ನಡ</x-ai.button>
+                    </div>
+                    @if ($summary !== [])
+                        <ul class="mt-2 list-disc space-y-1 pl-5 text-sm text-ink" lang="{{ $summaryLanguage }}">
+                            @foreach ($summary as $point)<li wire:key="sp-{{ $loop->index }}">{{ $point }}</li>@endforeach
+                        </ul>
+                        <p class="mt-1 text-[11px] text-ink-subtle">{{ __('Written by AI from the announcement below. The announcement is the official text.') }}</p>
+                    @endif
+                </div>
+            @endif
             <div class="whitespace-pre-line text-sm leading-relaxed text-ink">{{ $a['body'] }}</div>
             <x-attachments :files="$a['attachments'] ?? []" class="mt-4" />
             @if ($a['requires_ack'] && $a['read_at'] !== null)
