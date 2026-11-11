@@ -43,6 +43,7 @@
                                 <div><dt class="text-xs text-ink-muted">{{ __('CGPA') }}</dt><dd class="text-lg font-semibold text-ink">{{ $result['cgpa'] ?? '—' }}</dd></div>
                                 <div><dt class="text-xs text-ink-muted">{{ __('Credits') }}</dt><dd class="text-lg font-semibold text-ink">{{ $result['credits_earned'] + 0 }} / {{ $result['credits_registered'] + 0 }}</dd></div>
                             </dl>
+                            <x-ui.button size="sm" variant="secondary" icon="download" class="print:hidden" :href="route('documents.pdf', ['grade-card', $result['cycle']['id']])">{{ __('Grade card PDF') }}</x-ui.button>
                         </div>
                         <div class="overflow-x-auto">
                             <table class="w-full text-sm">

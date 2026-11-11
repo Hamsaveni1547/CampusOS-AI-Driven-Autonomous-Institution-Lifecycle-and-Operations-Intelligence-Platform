@@ -2,7 +2,7 @@
 @php($earnings = collect($slip['lines'])->where('kind', 'earning'))
 @php($deductions = collect($slip['lines'])->where('kind', 'deduction'))
 <div>
-    <div class="mb-4 flex justify-end print:hidden"><x-ui.button icon="printer" x-on:click="window.print()">{{ __('Print') }}</x-ui.button></div>
+    <div class="mb-4 flex justify-end print:hidden"><x-ui.button variant="secondary" icon="download" :href="route('documents.pdf', ['payslip', $payslipId])">{{ __('Download PDF') }}</x-ui.button> <x-ui.button icon="printer" x-on:click="window.print()">{{ __('Print') }}</x-ui.button></div>
 
     <div class="mx-auto max-w-3xl rounded-lg border border-line bg-surface p-8 print:border-0 print:p-0">
         <div class="mb-6 border-b border-line pb-4 text-center">

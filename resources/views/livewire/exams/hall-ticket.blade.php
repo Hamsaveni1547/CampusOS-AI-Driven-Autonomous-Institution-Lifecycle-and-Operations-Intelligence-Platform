@@ -1,7 +1,7 @@
 <div>
     <div class="mb-4 flex justify-between print:hidden">
         <x-ui.button variant="secondary" icon="arrow-left" :href="route('my-exams.index')">{{ __('My exams') }}</x-ui.button>
-        <x-ui.button icon="printer" x-on:click="window.print()">{{ __('Print') }}</x-ui.button>
+        <x-ui.button variant="secondary" icon="download" :href="route('documents.pdf', ['hall-ticket', $cycleId])">{{ __('Download PDF') }}</x-ui.button> <x-ui.button icon="printer" x-on:click="window.print()">{{ __('Print') }}</x-ui.button>
     </div>
 
     <div class="mx-auto max-w-3xl rounded-lg border border-line bg-surface p-8 print:border-0 print:p-0">

@@ -1,7 +1,7 @@
 @php($money = fn ($v) => '₹'.number_format((float) $v, 2))
 <div>
     <div class="mb-4 flex justify-end print:hidden">
-        <x-ui.button icon="printer" x-on:click="window.print()">{{ __('Print') }}</x-ui.button>
+        <x-ui.button variant="secondary" icon="download" :href="route('documents.pdf', ['receipt', $paymentId])">{{ __('Download PDF') }}</x-ui.button> <x-ui.button icon="printer" x-on:click="window.print()">{{ __('Print') }}</x-ui.button>
     </div>
 
     <div class="mx-auto max-w-2xl rounded-lg border border-line bg-surface p-8 print:border-0 print:p-0">

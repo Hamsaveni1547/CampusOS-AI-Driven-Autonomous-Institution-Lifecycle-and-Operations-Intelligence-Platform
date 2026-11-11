@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\AuditExportController;
+use App\Http\Controllers\DocumentDownloadController;
 use App\Http\Controllers\FileDownloadController;
 use App\Http\Controllers\SessionController;
+use App\Http\Controllers\VerifyDocumentController;
 use App\Livewire\Academic;
 use App\Livewire\Academics;
 use App\Livewire\Account\NotificationPreferences;
@@ -55,6 +57,9 @@ use Illuminate\Support\Facades\Route;
 | everything else behind campus.ready (no pending requirement).
 */
 
+// Public: check a printed document by its verification code (works signed in or not).
+Route::get('verify/{code}', VerifyDocumentController::class)->where('code', '[A-Za-z0-9-]{4,16}')->middleware('throttle:30,1')->name('documents.verify');
+
 Route::middleware('campus.guest')->group(function (): void {
     Route::livewire('login', Login::class)->name('login');
     Route::livewire('login/verify', TwoStepChallenge::class)->name('login.verify');
@@ -91,6 +96,7 @@ Route::middleware(['campus.auth'])->group(function (): void {
         });
 
         Route::get('files/{file}/download', FileDownloadController::class)->where('file', '[0-9A-Za-z]{26}')->name('files.download');
+        Route::get('documents/{type}/{id}.pdf', DocumentDownloadController::class)->where(['type' => 'receipt|payslip|hall-ticket|grade-card', 'id' => '[0-9A-Za-z]{26}'])->name('documents.pdf');
 
         // Academic structure: lists are open to members; changes need the manage permission.
         Route::livewire('departments', Academic\Departments\Index::class)->name('departments.index');
