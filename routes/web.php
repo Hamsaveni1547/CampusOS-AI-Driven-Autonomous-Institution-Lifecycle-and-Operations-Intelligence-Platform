@@ -244,6 +244,10 @@ Route::middleware(['campus.auth'])->group(function (): void {
             Route::livewire('institutions', Platform\Institutions\Index::class)->name('institutions.index');
             Route::livewire('settings', Platform\Settings::class)->name('settings.index');
             Route::livewire('monitoring', Platform\Monitoring::class)->name('monitoring.index');
+            Route::livewire('modules', Platform\Access\Modules::class)->name('access.modules');
+            Route::livewire('permissions', Platform\Access\Permissions::class)->name('access.permissions');
+            Route::livewire('roles', Platform\Access\Roles::class)->name('access.roles');
+            Route::livewire('roles/{role}', Platform\Access\RoleShow::class)->name('access.roles.show');
         });
     });
 });

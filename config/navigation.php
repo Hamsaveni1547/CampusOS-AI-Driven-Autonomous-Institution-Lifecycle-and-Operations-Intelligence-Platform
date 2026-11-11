@@ -128,6 +128,9 @@ return [
         'platform' => true,
         'items' => [
             ['label' => 'Institutions', 'route' => 'platform.institutions.index', 'icon' => 'building', 'platform' => true],
+            ['label' => 'Modules', 'route' => 'platform.access.modules', 'icon' => 'blocks', 'platform' => true, 'keywords' => 'enable disable features'],
+            ['label' => 'Roles & permissions', 'route' => 'platform.access.roles', 'icon' => 'shield-check', 'platform' => true, 'keywords' => 'rbac access matrix'],
+            ['label' => 'Permissions', 'route' => 'platform.access.permissions', 'icon' => 'key-round', 'platform' => true, 'keywords' => 'permission catalogue'],
             ['label' => 'Platform settings', 'route' => 'platform.settings.index', 'icon' => 'settings-2', 'platform' => true],
             ['label' => 'Monitoring', 'route' => 'platform.monitoring.index', 'icon' => 'gauge', 'platform' => true, 'keywords' => 'queues failed jobs'],
         ],
