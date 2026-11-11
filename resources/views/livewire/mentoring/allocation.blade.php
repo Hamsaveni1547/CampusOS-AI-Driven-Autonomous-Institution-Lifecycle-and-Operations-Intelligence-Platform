@@ -39,7 +39,7 @@
                     <x-ui.tr wire:key="ms-{{ $s['id'] }}">
                         <x-ui.td primary><span class="mr-2 font-mono text-xs text-ink-muted">{{ $s['roll_no'] ?? '—' }}</span><a href="{{ route('mentees.show', $s['id']) }}" wire:navigate class="font-medium text-ink hover:underline">{{ $s['name'] }}</a><span class="block font-mono text-xs text-ink-subtle">{{ $s['register_no'] }}</span></x-ui.td>
                         <x-ui.td :label="__('Mentor')">{{ $s['mentor']['name'] ?? '—' }}@if ($s['mentor'])<span class="block text-xs text-ink-muted">{{ __('since :d', ['d' => \App\Support\Format::date($s['mentor']['since'])]) }}</span>@endif</x-ui.td>
-                        <x-ui.td class="text-right">@if ($canAllocate)<x-ui.button size="sm" variant="ghost" wire:click="openReassign('{{ $s['id'] }}', @js($s['name']))">{{ __('Change') }}</x-ui.button>@endif</x-ui.td>
+                        <x-ui.td class="text-right">@if ($canAllocate)<x-ui.button size="sm" variant="ghost" wire:click="openReassign('{{ $s['id'] }}', {{ \Illuminate\Support\Js::from($s['name']) }})">{{ __('Change') }}</x-ui.button>@endif</x-ui.td>
                     </x-ui.tr>
                 @endforeach
                 <x-slot:emptyState><x-ui.empty-state compact icon="users" :title="__('No students in this section')" /></x-slot:emptyState>

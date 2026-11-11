@@ -23,7 +23,7 @@
                         <x-ui.badge size="sm" tone="danger">{{ __('Missed') }}</x-ui.badge>
                     @endif
                     @if ($row['can_submit'])
-                        <x-ui.button size="sm" :variant="$row['submission'] ? 'ghost' : 'primary'" icon="upload" wire:click="open('{{ $row['id'] }}', @js($row['title']), @js($row['submission']['text'] ?? null))">{{ $row['submission'] ? __('Resubmit') : __('Submit') }}</x-ui.button>
+                        <x-ui.button size="sm" :variant="$row['submission'] ? 'ghost' : 'primary'" icon="upload" wire:click="open('{{ $row['id'] }}', {{ \Illuminate\Support\Js::from($row['title']) }}, {{ \Illuminate\Support\Js::from($row['submission']['text'] ?? null) }})">{{ $row['submission'] ? __('Resubmit') : __('Submit') }}</x-ui.button>
                     @endif
                 </div>
             </div>

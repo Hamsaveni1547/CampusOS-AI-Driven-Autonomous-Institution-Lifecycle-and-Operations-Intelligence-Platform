@@ -48,7 +48,7 @@
                     <div class="flex items-center gap-2">
                         @if ($sub['marks'] !== null)<span class="font-semibold text-ink">{{ $sub['marks'] + 0 }} / {{ $detail['assignment']['max_marks'] + 0 }}</span>@endif
                         @if ($canManage)
-                            <x-ui.button size="sm" :variant="$sub['marks'] === null ? 'primary' : 'ghost'" wire:click="openEvaluation('{{ $sub['id'] }}', @js($sub['student']['name']), {{ $sub['marks'] ?? 'null' }}, @js($sub['feedback']))">{{ $sub['marks'] === null ? __('Evaluate') : __('Change') }}</x-ui.button>
+                            <x-ui.button size="sm" :variant="$sub['marks'] === null ? 'primary' : 'ghost'" wire:click="openEvaluation('{{ $sub['id'] }}', {{ \Illuminate\Support\Js::from($sub['student']['name']) }}, {{ $sub['marks'] ?? 'null' }}, {{ \Illuminate\Support\Js::from($sub['feedback']) }})">{{ $sub['marks'] === null ? __('Evaluate') : __('Change') }}</x-ui.button>
                         @endif
                     </div>
                 </div>

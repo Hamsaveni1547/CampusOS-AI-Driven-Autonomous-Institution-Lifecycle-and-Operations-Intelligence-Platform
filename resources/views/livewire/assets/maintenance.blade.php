@@ -29,11 +29,11 @@
                 <x-ui.td class="text-right">
                     @canapi('assets.maintenance.manage')
                         @if ($r['status'] === 'open')
-                            <x-ui.button size="sm" wire:click="openUpdate('{{ $r['id'] }}', 'in_progress', @js($r))">{{ __('Assign') }}</x-ui.button>
+                            <x-ui.button size="sm" wire:click="openUpdate('{{ $r['id'] }}', 'in_progress', {{ \Illuminate\Support\Js::from($r) }})">{{ __('Assign') }}</x-ui.button>
                         @elseif ($r['status'] === 'in_progress')
-                            <x-ui.button size="sm" icon="check" wire:click="openUpdate('{{ $r['id'] }}', 'resolved', @js($r))">{{ __('Resolve') }}</x-ui.button>
+                            <x-ui.button size="sm" icon="check" wire:click="openUpdate('{{ $r['id'] }}', 'resolved', {{ \Illuminate\Support\Js::from($r) }})">{{ __('Resolve') }}</x-ui.button>
                         @elseif ($r['status'] === 'resolved')
-                            <x-ui.button size="sm" variant="ghost" wire:click="openUpdate('{{ $r['id'] }}', 'closed', @js($r))">{{ __('Close') }}</x-ui.button>
+                            <x-ui.button size="sm" variant="ghost" wire:click="openUpdate('{{ $r['id'] }}', 'closed', {{ \Illuminate\Support\Js::from($r) }})">{{ __('Close') }}</x-ui.button>
                         @endif
                     @endcanapi
                 </x-ui.td>

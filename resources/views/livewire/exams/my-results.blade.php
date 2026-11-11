@@ -19,7 +19,7 @@
                             @if ($course['revaluation'])
                                 <span class="text-xs text-ink-muted">{{ __('Revaluation: :s', ['s' => \App\Support\Format::label($course['revaluation']['status'])]) }}@if ($course['revaluation']['new_marks'] !== null) ({{ $course['revaluation']['old_marks'] + 0 }} → {{ $course['revaluation']['new_marks'] + 0 }})@endif</span>
                             @elseif ($course['can_request_revaluation'])
-                                <x-ui.button size="sm" variant="ghost" wire:click="openRevaluation('{{ $course['id'] }}', @js($course['code']))">{{ __('Ask for revaluation') }}</x-ui.button>
+                                <x-ui.button size="sm" variant="ghost" wire:click="openRevaluation('{{ $course['id'] }}', {{ \Illuminate\Support\Js::from($course['code']) }})">{{ __('Ask for revaluation') }}</x-ui.button>
                             @endif
                         </span>
                     </div>

@@ -78,7 +78,7 @@
                                 x-on:click="const url = URL.createObjectURL(new Blob(['CampusOS recovery codes\n\n' + codes.join('\n') + '\n'], { type: 'text/plain' })); const a = document.createElement('a'); a.href = url; a.download = 'campusos-recovery-codes.txt'; a.click(); URL.revokeObjectURL(url)">
                                 {{ __('Download') }}
                             </x-ui.button>
-                            <x-ui.button size="sm" variant="secondary" icon="copy" x-on:click="navigator.clipboard.writeText(codes.join('\n')); $store.toasts.push({ type: 'success', title: @js(__('Copied')) })">{{ __('Copy') }}</x-ui.button>
+                            <x-ui.button size="sm" variant="secondary" icon="copy" x-on:click="navigator.clipboard.writeText(codes.join('\n')); $store.toasts.push({ type: 'success', title: {{ \Illuminate\Support\Js::from(__('Copied')) }} })">{{ __('Copy') }}</x-ui.button>
                             <x-ui.button size="sm" variant="secondary" icon="printer" x-on:click="window.print()">{{ __('Print') }}</x-ui.button>
                         </div>
                     </div>

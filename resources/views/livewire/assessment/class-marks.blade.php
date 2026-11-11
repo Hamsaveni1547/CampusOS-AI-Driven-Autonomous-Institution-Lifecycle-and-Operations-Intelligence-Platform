@@ -63,7 +63,7 @@
                                     <x-ui.td :label="__('Marks')">{{ $student['marks'] ?? '—' }}</x-ui.td>
                                     <x-ui.td class="text-right">
                                         @if ($student['mark_id'])
-                                            <x-ui.button size="sm" variant="ghost" wire:click="openCorrection({{ $student['mark_id'] }}, @js($student['name']), {{ $student['marks'] ?? 'null' }}, '{{ $student['status'] }}')">{{ __('Correct') }}</x-ui.button>
+                                            <x-ui.button size="sm" variant="ghost" wire:click="openCorrection({{ $student['mark_id'] }}, {{ \Illuminate\Support\Js::from($student['name']) }}, {{ $student['marks'] ?? 'null' }}, '{{ $student['status'] }}')">{{ __('Correct') }}</x-ui.button>
                                         @endif
                                     </x-ui.td>
                                 @endif

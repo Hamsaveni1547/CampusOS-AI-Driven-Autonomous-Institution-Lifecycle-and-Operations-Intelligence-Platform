@@ -47,10 +47,10 @@
                             <x-ui.status-badge :status="$demand['overdue'] ? 'overdue' : $demand['status']" size="sm" />
                             @canapi('finance.demands.manage')
                                 @if (in_array($demand['status'], ['open', 'partly_paid'], true))
-                                    <x-ui.button size="sm" variant="ghost" wire:click="openConcession('{{ $demand['id'] }}', @js($demand['title']))">{{ __('Concession') }}</x-ui.button>
+                                    <x-ui.button size="sm" variant="ghost" wire:click="openConcession('{{ $demand['id'] }}', {{ \Illuminate\Support\Js::from($demand['title']) }})">{{ __('Concession') }}</x-ui.button>
                                 @endif
                                 @if ($demand['status'] === 'open' && $demand['paid'] == 0)
-                                    <x-ui.button size="sm" variant="ghost" icon="x" wire:click="askCancel('demand', '{{ $demand['id'] }}', @js($demand['title']))"><span class="sr-only">{{ __('Cancel') }}</span></x-ui.button>
+                                    <x-ui.button size="sm" variant="ghost" icon="x" wire:click="askCancel('demand', '{{ $demand['id'] }}', {{ \Illuminate\Support\Js::from($demand['title']) }})"><span class="sr-only">{{ __('Cancel') }}</span></x-ui.button>
                                 @endif
                             @endcanapi
                         </div>
@@ -69,7 +69,7 @@
                                 <x-ui.status-badge status="cancelled" size="sm" />
                             @else
                                 @canapi('finance.payments.cancel')
-                                    <x-ui.button size="sm" variant="ghost" icon="x" wire:click="askCancel('payment', '{{ $p['id'] }}', @js($p['receipt_no']))"><span class="sr-only">{{ __('Cancel receipt') }}</span></x-ui.button>
+                                    <x-ui.button size="sm" variant="ghost" icon="x" wire:click="askCancel('payment', '{{ $p['id'] }}', {{ \Illuminate\Support\Js::from($p['receipt_no']) }})"><span class="sr-only">{{ __('Cancel receipt') }}</span></x-ui.button>
                                 @endcanapi
                             @endif
                         </div>

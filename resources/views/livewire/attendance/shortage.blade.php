@@ -35,7 +35,7 @@
                     <x-ui.td :label="__('Standing')"><x-attendance.standing :standing="$row['standing']" /></x-ui.td>
                     <x-ui.td class="text-right">
                         @if ($canCondone && $row['standing'] === 'condonable')
-                            <x-ui.button size="sm" variant="secondary" wire:click="openCondone('{{ $row['student_id'] }}', '{{ $row['class_id'] }}', @js($row['name'].' · '.$row['course']['code']))">{{ __('Condone') }}</x-ui.button>
+                            <x-ui.button size="sm" variant="secondary" wire:click="openCondone('{{ $row['student_id'] }}', '{{ $row['class_id'] }}', {{ \Illuminate\Support\Js::from($row['name'].' · '.$row['course']['code']) }})">{{ __('Condone') }}</x-ui.button>
                         @endif
                     </x-ui.td>
                 </x-ui.tr>

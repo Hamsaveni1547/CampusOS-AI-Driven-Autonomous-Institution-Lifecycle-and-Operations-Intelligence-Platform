@@ -85,13 +85,36 @@ class Index extends Component
         foreach ($this->current()['settings'] ?? [] as $setting) {
             $this->values[$setting['key']] = match ($setting['type']) {
                 'bool' => (bool) $setting['value'],
-                'array' => implode(', ', (array) $setting['value']),
+                'array' => self::isTable($setting['value']) ? array_values((array) $setting['value']) : implode(', ', (array) $setting['value']),
                 'int' => (string) $setting['value'],
                 default => $setting['secret'] ? '' : (string) $setting['value'],
             };
         }
 
         $this->resetErrorBag();
+    }
+
+    /**
+     * A list setting whose items are rows (e.g. grade bands: grade, min, points) is edited as a table.
+     */
+    private static function isTable(mixed $value): bool
+    {
+        return is_array($value) && $value !== [] && is_array(reset($value));
+    }
+
+    public function addRow(string $key): void
+    {
+        $rows = (array) ($this->values[$key] ?? []);
+        $columns = array_keys((array) (reset($rows) ?: []));
+        $rows[] = array_fill_keys($columns, '');
+        $this->values[$key] = $rows;
+    }
+
+    public function removeRow(string $key, int $index): void
+    {
+        $rows = (array) ($this->values[$key] ?? []);
+        unset($rows[$index]);
+        $this->values[$key] = array_values($rows);
     }
 
     public function save(): void
@@ -108,7 +131,9 @@ class Index extends Component
             $payload[$setting['key']] = match ($setting['type']) {
                 'bool' => (bool) $value,
                 'int' => is_numeric($value) ? (int) $value : $value,
-                'array' => array_values(array_filter(array_map('trim', explode(',', (string) $value)), fn ($item) => $item !== '')),
+                'array' => is_array($value)
+                    ? array_values(array_map(fn (array $row): array => array_map(fn ($cell) => is_numeric($cell) ? $cell + 0 : trim((string) $cell), $row), $value))
+                    : array_values(array_filter(array_map('trim', explode(',', (string) $value)), fn ($item) => $item !== '')),
                 default => $value === '' ? null : $value,
             };
         }

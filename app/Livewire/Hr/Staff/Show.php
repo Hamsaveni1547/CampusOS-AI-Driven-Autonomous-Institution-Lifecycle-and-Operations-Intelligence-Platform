@@ -131,7 +131,7 @@ class Show extends Component
         $this->validate([
             'qualificationForm.degree' => 'required|string|max:100',
             'qualificationForm.year_of_passing' => 'nullable|integer|min:1950|max:'.now()->year,
-            'certificate' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'certificate' => 'nullable|file|mimes:pdf,jpg,jpeg,png,doc,docx|max:10240',
         ]);
 
         $this->callApi(function () {

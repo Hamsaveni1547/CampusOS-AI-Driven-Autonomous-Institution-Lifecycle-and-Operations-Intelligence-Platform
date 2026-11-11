@@ -136,7 +136,7 @@
                     <x-ui.input :label="__('Year of passing')" type="number" wire:model="qualificationForm.year_of_passing" optional />
                     <x-ui.input :label="__('Grade / class')" wire:model="qualificationForm.grade" optional />
                 </div>
-                <x-ui.file-upload :label="__('Certificate')" wire:model="certificate" accept=".pdf,image/*" :max-kb="5120" optional />
+                <x-ui.file-upload :label="__('Certificate')" wire:model="certificate" accept=".pdf,.doc,.docx,image/*" :max-kb="10240" optional />
                 @if ($formError)<x-ui.alert tone="danger">{{ $formError }}</x-ui.alert>@endif
             </form>
             <x-slot:footer>

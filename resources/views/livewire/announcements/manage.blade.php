@@ -22,7 +22,7 @@
                 <x-ui.td :label="__('Seen')">@if ($a['status'] !== 'draft'){{ $a['read_count'] }} / {{ $a['recipients_count'] }}@if ($a['requires_ack'])<span class="block text-xs text-ink-muted">{{ __(':n acknowledged', ['n' => $a['ack_count']]) }}</span>@endif @else — @endif</x-ui.td>
                 <x-ui.td class="whitespace-nowrap text-right">
                     @if ($a['status'] === 'draft')
-                        <x-ui.button size="sm" variant="ghost" wire:click="open(@js($a))">{{ __('Edit') }}</x-ui.button>
+                        <x-ui.button size="sm" variant="ghost" wire:click="open({{ \Illuminate\Support\Js::from($a) }})">{{ __('Edit') }}</x-ui.button>
                         <x-ui.button size="sm" :icon="$a['publish_at'] ? 'clock' : 'send'" wire:click="publish('{{ $a['id'] }}')" wire:confirm="{{ $a['publish_at'] ? __('Schedule it to go out at the chosen time?') : __('Publish and notify everyone in the audience?') }}">{{ $a['publish_at'] ? __('Schedule') : __('Publish') }}</x-ui.button>
                         <x-ui.button size="sm" variant="ghost" icon="trash-2" wire:click="delete('{{ $a['id'] }}')" wire:confirm="{{ __('Delete this draft?') }}"><span class="sr-only">{{ __('Delete') }}</span></x-ui.button>
                     @elseif ($a['status'] === 'scheduled')

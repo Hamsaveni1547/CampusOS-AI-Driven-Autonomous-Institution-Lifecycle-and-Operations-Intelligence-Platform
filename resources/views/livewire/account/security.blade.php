@@ -185,7 +185,7 @@
             </ul>
             <div class="mt-3 flex gap-2">
                 <x-ui.button size="sm" variant="secondary" icon="download" x-on:click="const url = URL.createObjectURL(new Blob(['CampusOS recovery codes\n\n' + codes.join('\n') + '\n'], { type: 'text/plain' })); const a = document.createElement('a'); a.href = url; a.download = 'campusos-recovery-codes.txt'; a.click(); URL.revokeObjectURL(url)">{{ __('Download') }}</x-ui.button>
-                <x-ui.button size="sm" variant="secondary" icon="copy" x-on:click="navigator.clipboard.writeText(codes.join('\n')); $store.toasts.push({ type: 'success', title: @js(__('Copied')) })">{{ __('Copy') }}</x-ui.button>
+                <x-ui.button size="sm" variant="secondary" icon="copy" x-on:click="navigator.clipboard.writeText(codes.join('\n')); $store.toasts.push({ type: 'success', title: {{ \Illuminate\Support\Js::from(__('Copied')) }} })">{{ __('Copy') }}</x-ui.button>
             </div>
         </div>
         <x-slot:footer><x-ui.button x-on:click="$dispatch('close-dialog', 'recovery-codes')">{{ __('I have saved them') }}</x-ui.button></x-slot:footer>

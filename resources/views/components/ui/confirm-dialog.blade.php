@@ -31,7 +31,7 @@
             @endif
 
             <div class="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-                <x-ui.button variant="secondary" x-on:click="$dispatch('close-dialog', @js($name))">{{ $cancelLabel ?? __('Cancel') }}</x-ui.button>
+                <x-ui.button variant="secondary" x-on:click="$dispatch('close-dialog', {{ \Illuminate\Support\Js::from($name) }})">{{ $cancelLabel ?? __('Cancel') }}</x-ui.button>
                 @php
                     $confirmAttributes = $attributes->only(['x-on:click'])->merge(array_filter([
                         'wire:click' => $action,

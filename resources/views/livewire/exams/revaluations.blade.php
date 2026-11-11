@@ -30,7 +30,7 @@
                 <x-ui.td :label="__('Reason')">{{ $row['reason'] }}@if ($row['remarks'])<span class="block text-xs text-ink-muted">{{ $row['remarks'] }}</span>@endif</x-ui.td>
                 <x-ui.td class="text-right">
                     @if ($row['status'] === 'pending')
-                        <x-ui.button size="sm" wire:click="open('{{ $row['id'] }}', @js($row['student']['name']), {{ $row['marks'] ?? 'null' }})">{{ __('Decide') }}</x-ui.button>
+                        <x-ui.button size="sm" wire:click="open('{{ $row['id'] }}', {{ \Illuminate\Support\Js::from($row['student']['name']) }}, {{ $row['marks'] ?? 'null' }})">{{ __('Decide') }}</x-ui.button>
                     @else
                         <x-ui.status-badge :status="$row['status']" />
                     @endif

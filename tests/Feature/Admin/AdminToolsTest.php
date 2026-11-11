@@ -75,6 +75,30 @@ class AdminToolsTest extends TestCase
         Http::assertSent(fn (Request $r) => $r->method() === 'PUT' && $r->data() === ['mfa_required' => true, 'lockout_attempts' => 7, 'mfa_roles' => ['institution_admin', 'hod']]);
     }
 
+    public function test_table_settings_such_as_grade_bands_are_edited_as_rows(): void
+    {
+        $group = ['group' => 'exams', 'label' => 'Examinations', 'settings' => [
+            ['key' => 'grades', 'label' => 'Grade bands', 'type' => 'array', 'default' => [], 'secret' => false, 'value' => [
+                ['grade' => 'O', 'min' => 90, 'points' => 10],
+                ['grade' => 'A', 'min' => 70, 'points' => 8],
+            ]],
+        ]];
+        Http::fake([
+            self::API.'settings/exams' => Http::response(['data' => $group]),
+            self::API.'settings' => Http::response(['data' => [$group]]),
+        ]);
+
+        Livewire::test(Settings::class)
+            ->assertSee('Grade bands')
+            ->call('addRow', 'grades')
+            ->set('values.grades.2', ['grade' => 'P', 'min' => '40', 'points' => '4'])
+            ->call('removeRow', 'grades', 1)
+            ->call('save')
+            ->assertHasNoErrors();
+
+        Http::assertSent(fn (Request $r) => $r->method() === 'PUT' && $r->data() === ['grades' => [['grade' => 'O', 'min' => 90, 'points' => 10], ['grade' => 'P', 'min' => 40, 'points' => 4]]]);
+    }
+
     public function test_settings_are_read_only_without_manage_permission(): void
     {
         Http::fake([self::API.'settings' => Http::response(['data' => [['group' => 'general', 'label' => 'General', 'settings' => []]]])]);

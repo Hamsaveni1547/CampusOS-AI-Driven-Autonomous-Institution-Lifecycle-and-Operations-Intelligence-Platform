@@ -30,12 +30,12 @@
                     @if ($mt['minutes'])<p class="mt-1 text-xs text-ink">{{ $mt['minutes'] }}</p>@endif
                     <div class="mt-2 flex gap-2">
                         @if ($mt['status'] === 'requested')
-                            <x-ui.button size="sm" wire:click="openRecord(@js($mt), 'scheduled')">{{ __('Schedule') }}</x-ui.button>
+                            <x-ui.button size="sm" wire:click="openRecord({{ \Illuminate\Support\Js::from($mt) }}, 'scheduled')">{{ __('Schedule') }}</x-ui.button>
                         @elseif ($mt['status'] === 'scheduled')
-                            <x-ui.button size="sm" wire:click="openRecord(@js($mt), 'held')">{{ __('Record minutes') }}</x-ui.button>
+                            <x-ui.button size="sm" wire:click="openRecord({{ \Illuminate\Support\Js::from($mt) }}, 'held')">{{ __('Record minutes') }}</x-ui.button>
                         @endif
                         @if (in_array($mt['status'], ['requested', 'scheduled'], true))
-                            <x-ui.button size="sm" variant="ghost" wire:click="openRecord(@js($mt), 'cancelled')">{{ __('Cancel') }}</x-ui.button>
+                            <x-ui.button size="sm" variant="ghost" wire:click="openRecord({{ \Illuminate\Support\Js::from($mt) }}, 'cancelled')">{{ __('Cancel') }}</x-ui.button>
                         @endif
                     </div>
                 </div>
