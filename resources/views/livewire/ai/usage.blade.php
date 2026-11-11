@@ -49,4 +49,49 @@
             </div>
         </x-ui.card>
     </div>
+
+    {{-- Models --}}
+    <x-ui.card class="mt-6" :title="__('Models')" :description="__('Providers retire models from time to time. Pick from what each provider offers your key today. “Quick” is used for short tasks; “Smart” for writing and the assistant.')">
+        <x-slot:actions>
+            <x-ui.button size="sm" variant="ghost" icon="refresh-cw" wire:click="refreshModels" loading="refreshModels">{{ __('Refresh lists') }}</x-ui.button>
+            @canapi('admin.settings.manage')<x-ui.button size="sm" icon="save" wire:click="saveModels" loading="saveModels">{{ __('Save models') }}</x-ui.button>@endcanapi
+        </x-slot:actions>
+        <div class="grid gap-6 md:grid-cols-2">
+            @foreach ($m['providers'] ?? [] as $p)
+                @php($name = $p['provider'])
+                <div wire:key="prov-{{ $name }}" class="rounded-lg border border-line p-4">
+                    <div class="mb-3 flex items-center justify-between gap-2">
+                        <p class="font-medium text-ink">{{ ucfirst($name) }}
+                            @if ($name === $m['provider'])<x-ui.badge size="sm" tone="info" class="ml-1">{{ __('Main') }}</x-ui.badge>@elseif ($name === $m['fallback'])<x-ui.badge size="sm" class="ml-1">{{ __('Backup') }}</x-ui.badge>@endif
+                        </p>
+                        @if ($p['configured'])
+                            <x-ui.button size="sm" variant="secondary" icon="plug" wire:click="test('{{ $name }}')" loading="test">{{ __('Test') }}</x-ui.button>
+                        @else
+                            <x-ui.badge size="sm" tone="warning">{{ __('No key') }}</x-ui.badge>
+                        @endif
+                    </div>
+
+                    @if (! $p['ok'])
+                        <x-ui.alert tone="warning" class="mb-3">{{ __('Could not load models: :e', ['e' => $p['error']]) }}</x-ui.alert>
+                    @endif
+
+                    <div class="grid gap-3 sm:grid-cols-2">
+                        @foreach (['fast' => __('Quick'), 'smart' => __('Smart')] as $tier => $label)
+                            <div wire:key="sel-{{ $name }}-{{ $tier }}">
+                                <x-ui.select :label="$label" wire:model="chosen.{{ $name }}.{{ $tier }}" :options="['' => __('Default: :m', ['m' => $p['defaults'][$tier]])] + collect($p['models'])->mapWithKeys(fn ($id) => [$id => $id])->all()" :disabled="! $p['configured']" />
+                            </div>
+                        @endforeach
+                    </div>
+
+                    @if ($t = $tests[$name] ?? null)
+                        @if ($t['ok'])
+                            <p class="mt-3 flex items-center gap-1.5 text-sm text-success"><x-ui.icon name="circle-check" class="size-4" />{{ __('Working: :m answered “:r” in :s s', ['m' => $t['model'], 'r' => $t['reply'], 's' => round($t['ms'] / 1000, 1)]) }}</p>
+                        @else
+                            <p class="mt-3 text-sm text-danger">{{ $t['error'] }}</p>
+                        @endif
+                    @endif
+                </div>
+            @endforeach
+        </div>
+    </x-ui.card>
 </div>

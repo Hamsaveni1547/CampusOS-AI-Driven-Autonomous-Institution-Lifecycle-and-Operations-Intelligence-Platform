@@ -86,14 +86,29 @@ class AiScreensTest extends TestCase
 
     public function test_usage_page_shows_totals_and_days(): void
     {
-        $this->signIn(['permissions' => ['ai.usage.view'], 'roles' => ['institution_admin']]);
-        Http::fake([self::API.'ai/usage*' => Http::response(['data' => [
-            'provider' => 'groq', 'fallback' => 'gemini', 'days' => 7,
-            'totals' => ['calls' => 42, 'failed' => 2, 'limited' => 0, 'tokens' => 51234, 'average_ms' => 1250],
-            'by_day' => [['date' => now()->subDay()->toDateString(), 'calls' => 20, 'failed' => 1], ['date' => now()->toDateString(), 'calls' => 22, 'failed' => 1]],
-            'by_feature' => [['feature' => 'writing', 'calls' => 30, 'failed' => 1]], 'by_provider' => [['provider' => 'groq', 'calls' => 40]],
-        ]])]);
+        $this->signIn(['permissions' => ['ai.usage.view', 'admin.settings.manage'], 'roles' => ['institution_admin']]);
+        Http::fake([
+            self::API.'ai/usage*' => Http::response(['data' => [
+                'provider' => 'groq', 'fallback' => 'gemini', 'days' => 7,
+                'totals' => ['calls' => 42, 'failed' => 2, 'limited' => 0, 'tokens' => 51234, 'average_ms' => 1250],
+                'by_day' => [['date' => now()->subDay()->toDateString(), 'calls' => 20, 'failed' => 1], ['date' => now()->toDateString(), 'calls' => 22, 'failed' => 1]],
+                'by_feature' => [['feature' => 'writing', 'calls' => 30, 'failed' => 1]], 'by_provider' => [['provider' => 'groq', 'calls' => 40]],
+            ]]),
+            self::API.'ai/models/test' => Http::response(['data' => ['ok' => true, 'model' => 'openai/gpt-oss-20b', 'reply' => 'OK', 'ms' => 640]]),
+            self::API.'ai/models*' => Http::response(['data' => ['provider' => 'groq', 'fallback' => 'gemini', 'providers' => [
+                ['provider' => 'groq', 'configured' => true, 'defaults' => ['fast' => 'openai/gpt-oss-20b', 'smart' => 'openai/gpt-oss-120b'], 'chosen' => ['fast' => '', 'smart' => ''], 'ok' => true, 'models' => ['openai/gpt-oss-120b', 'openai/gpt-oss-20b', 'qwen/qwen3.8-27b'], 'error' => null],
+                ['provider' => 'gemini', 'configured' => false, 'defaults' => ['fast' => 'gemini-3.1-flash-lite', 'smart' => 'gemini-3.1-flash-lite'], 'chosen' => ['fast' => '', 'smart' => ''], 'ok' => false, 'models' => [], 'error' => 'No API key in the backend .env'],
+            ]]]),
+            self::API.'settings/ai' => Http::response(['data' => []]),
+        ]);
 
-        Livewire::test(Usage::class)->assertSee('42')->assertSee('51,234')->assertSee('Announcement writer')->assertSee('1.3 s');
+        Livewire::test(Usage::class)
+            ->assertSee('42')->assertSee('51,234')->assertSee('Announcement writer')->assertSee('1.3 s')
+            ->assertSee('qwen/qwen3.8-27b')->assertSee('No key')
+            ->call('test', 'groq')->assertSee('Working: openai/gpt-oss-20b answered')
+            ->set('chosen.groq.smart', 'qwen/qwen3.8-27b')
+            ->call('saveModels');
+
+        Http::assertSent(fn (Request $r) => $r->method() === 'PUT' && str_ends_with($r->url(), 'settings/ai') && $r['groq_smart_model'] === 'qwen/qwen3.8-27b' && $r['groq_fast_model'] === null);
     }
 }
