@@ -13,6 +13,7 @@ use App\Livewire\Account\Security;
 use App\Livewire\Account\StaffProfile;
 use App\Livewire\Admin;
 use App\Livewire\Admissions;
+use App\Livewire\Ai\Assistant;
 use App\Livewire\Ai\Usage;
 use App\Livewire\Announcements\Feed;
 use App\Livewire\Announcements\Manage;
@@ -82,6 +83,7 @@ Route::middleware(['campus.auth'])->group(function (): void {
     Route::middleware('campus.ready')->group(function (): void {
         Route::livewire('/', Home::class)->name('home');
         Route::livewire('notifications', Notifications::class)->name('notifications.index');
+        Route::livewire('assistant', Assistant::class)->middleware('permission:ai.assistant.use')->name('assistant');
         Route::livewire('calendar', Calendar::class)->name('calendar.index');
         Route::livewire('announcements', Feed::class)->name('announcements.index');
         Route::livewire('announcements/manage', Manage::class)->middleware('permission:communication.announcements.publish,communication.announcements.publish_all')->name('announcements.manage');

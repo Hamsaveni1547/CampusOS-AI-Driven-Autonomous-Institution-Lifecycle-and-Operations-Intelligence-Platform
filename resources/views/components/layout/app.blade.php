@@ -38,5 +38,12 @@
         </div>
 
         <x-ui.command-palette :items="$palette" />
+
+        {{-- Ask CampusOS: a link (not a live widget) so pages stay light --}}
+        @if ($currentUser?->can('ai.assistant.use') && ! request()->routeIs('assistant') && app(\App\Support\AiFeatures::class)->on('assistant'))
+            <a href="{{ route('assistant') }}" wire:navigate class="fixed bottom-5 right-5 z-30 flex items-center gap-2 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 px-4 py-3 text-sm font-medium text-white shadow-lg transition hover:shadow-xl print:hidden" aria-label="{{ __('Ask CampusOS') }}">
+                <x-ui.icon name="sparkles" class="size-5" /><span class="hidden sm:inline">{{ __('Ask CampusOS') }}</span>
+            </a>
+        @endif
     </div>
 </x-layout.document>
