@@ -23,6 +23,7 @@ class QuestionBankScreensTest extends TestCase
         $labels = fn (array $values) => array_map(fn (string $v) => ['value' => $v, 'label' => ucfirst($v)], $values);
         Http::fake([
             self::API.'qbank/options' => Http::response(['data' => ['types' => $labels(['mcq', 'short', 'long']), 'difficulties' => $labels(['easy', 'medium', 'hard']), 'bloom_levels' => $labels(['remember', 'apply']), 'paper_statuses' => $labels(['draft', 'submitted', 'approved', 'sealed']), 'release_minutes_before' => 30]]),
+            self::API.'qbank/courses' => Http::response(['data' => [['id' => 'c1', 'code' => '21CS51', 'title' => 'DBMS']]]),
             self::API.'courses?*' => Http::response(['data' => [['id' => 'c1', 'code' => '21CS51', 'title' => 'DBMS']], 'meta' => self::META]),
         ]);
     }

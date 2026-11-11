@@ -78,6 +78,10 @@ class Navigation
             return $user->isPlatformAdmin();
         }
 
+        if (($item['hidden_for'] ?? []) !== [] && $user->hasAnyRole((array) $item['hidden_for'])) {
+            return false;
+        }
+
         $roles = (array) ($item['roles'] ?? []);
         $permissions = (array) ($item['permissions'] ?? []);
 

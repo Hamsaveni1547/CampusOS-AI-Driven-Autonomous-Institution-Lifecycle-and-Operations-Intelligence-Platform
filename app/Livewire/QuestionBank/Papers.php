@@ -4,7 +4,6 @@ namespace App\Livewire\QuestionBank;
 
 use App\Livewire\Concerns\InteractsWithApi;
 use App\Livewire\Concerns\WithTable;
-use App\Support\Lookups;
 use Illuminate\View\View;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -113,7 +112,7 @@ class Papers extends Component
         $canSet = $this->can('qbank.papers.set');
 
         return view('livewire.question-bank.papers', [
-            'courses' => app(Lookups::class)->courses(),
+            'courses' => collect((array) $this->api()->get('qbank/courses', memoize: true)->data())->mapWithKeys(fn (array $c) => [$c['id'] => $c['code'].' · '.$c['title']])->all(),
             'blueprints' => $this->course !== '' && ($canSet || $this->can('qbank.papers.review')) ? $this->blueprints() : [],
             'rows' => $this->api()->endpoint('question-papers')->page([...$this->activeFilters(null), ...($this->course !== '' ? ['course' => $this->course] : [])], $this->tableQuery()),
             'exams' => $this->course !== '' && $canSet ? collect((array) $this->api()->get('courses/'.$this->course.'/upcoming-exams')->data())->mapWithKeys(fn (array $e) => [$e['id'] => $e['cycle'].' · '.$e['date'].' '.$e['starts_at']])->all() : [],

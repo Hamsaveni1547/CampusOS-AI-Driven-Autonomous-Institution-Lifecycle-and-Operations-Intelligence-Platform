@@ -157,8 +157,8 @@ Route::middleware(['campus.auth'])->group(function (): void {
 
         // Question bank and papers
         Route::livewire('question-bank', QuestionBank\Questions::class)->middleware('permission:qbank.questions.contribute,qbank.questions.manage,qbank.papers.set,qbank.papers.review')->name('question-bank.index');
-        Route::livewire('question-papers', QuestionBank\Papers::class)->middleware('permission:qbank.papers.set,qbank.papers.review,qbank.papers.seal,qbank.papers.release,qbank.logs.view')->name('question-papers.index');
-        Route::livewire('question-papers/{paper}', QuestionBank\PaperShow::class)->middleware('permission:qbank.papers.set,qbank.papers.review,qbank.papers.seal,qbank.papers.release,qbank.logs.view')->name('question-papers.show');
+        Route::livewire('question-papers', QuestionBank\Papers::class)->middleware('permission:qbank.papers.set,qbank.papers.review,qbank.papers.seal,qbank.papers.release,qbank.logs.view,qbank.papers.view')->name('question-papers.index');
+        Route::livewire('question-papers/{paper}', QuestionBank\PaperShow::class)->middleware('permission:qbank.papers.set,qbank.papers.review,qbank.papers.seal,qbank.papers.release,qbank.logs.view,qbank.papers.view')->name('question-papers.show');
 
         // Fees (receipts check access in the API: staff, or the student who paid)
         Route::livewire('fees/collect', Fees\Collect::class)->middleware('permission:finance.payments.collect,finance.reports.view')->name('fees.collect');

@@ -32,9 +32,53 @@ class Take extends Component
 
     public string $notes = '';
 
+    /** Picker: step 1 section (batch + section name), step 2 subject (class id), and the date. */
+    public string $pickSection = '';
+
+    public string $pickClass = '';
+
+    public string $pickDate = '';
+
     public function mount(): void
     {
+        $this->pickDate = now()->toDateString();
         $this->loadSheet();
+    }
+
+    public function updatedPickSection(): void
+    {
+        $this->pickClass = '';
+        $classes = $this->classesIn($this->pickSection);
+
+        if (count($classes) === 1) {
+            $this->pickClass = (string) array_key_first($classes);
+        }
+    }
+
+    /**
+     * Opens the student list for the chosen section, subject and date.
+     */
+    public function startPicked(): void
+    {
+        $this->validate(['pickSection' => 'required|string', 'pickClass' => 'required|string', 'pickDate' => 'required|date|before_or_equal:today'], [], ['pickSection' => __('section'), 'pickClass' => __('subject'), 'pickDate' => __('date')]);
+        $this->open($this->pickClass, $this->pickDate);
+    }
+
+    /**
+     * @return list<array<string, mixed>> the teacher's classes this term
+     */
+    private function myClasses(): array
+    {
+        return (array) ($this->api()->get('me/teaching', memoize: true)->data()['classes'] ?? []);
+    }
+
+    /**
+     * @return array<string, string> class id => "code · title" for one section
+     */
+    private function classesIn(string $section): array
+    {
+        return collect($this->myClasses())->filter(fn (array $c) => $c['section']['batch'].' '.$c['section']['name'] === $section)
+            ->mapWithKeys(fn (array $c) => [$c['id'] => $c['course']['code'].' · '.$c['course']['title']])->all();
     }
 
     public function open(string $class, string $date, ?string $slot = null): void
@@ -91,7 +135,11 @@ class Take extends Component
         $options = (array) $this->api()->get('attendance/options', memoize: true)->data();
         $sheet = $this->sheet();
 
+        $sections = $sheet === null ? collect($this->myClasses())->map(fn (array $c) => $c['section']['batch'].' '.$c['section']['name'])->unique()->sort()->mapWithKeys(fn (string $s) => [$s => $s])->all() : [];
+
         return view('livewire.attendance.take', [
+            'sections' => $sections,
+            'subjects' => $this->pickSection !== '' ? $this->classesIn($this->pickSection) : [],
             'pending' => $sheet === null ? (array) $this->api()->withoutCache(fn () => $this->api()->get('me/attendance/pending'))->data() : [],
             'sheet' => $sheet,
             'options' => collect($options['statuses'])->mapWithKeys(fn (array $s) => [$s['value'] => $s['label']])->all(),

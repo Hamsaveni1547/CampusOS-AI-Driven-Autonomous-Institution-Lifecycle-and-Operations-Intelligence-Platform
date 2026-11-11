@@ -5,7 +5,6 @@ namespace App\Livewire\QuestionBank;
 use App\Api\Page;
 use App\Livewire\Concerns\InteractsWithApi;
 use App\Livewire\Concerns\WithTable;
-use App\Support\Lookups;
 use Illuminate\View\View;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -89,7 +88,7 @@ class Questions extends Component
         $map = fn (string $list) => collect($options[$list])->mapWithKeys(fn (array $o) => [$o['value'] => $o['label']])->all();
 
         return view('livewire.question-bank.questions', [
-            'courses' => app(Lookups::class)->courses(),
+            'courses' => collect((array) $this->api()->get('qbank/courses', memoize: true)->data())->mapWithKeys(fn (array $c) => [$c['id'] => $c['code'].' · '.$c['title']])->all(),
             'rows' => $this->course !== '' ? $this->rows() : null,
             'coverage' => $this->course !== '' ? (array) $this->api()->get('courses/'.$this->course.'/question-coverage')->data() : null,
             'types' => $map('types'),

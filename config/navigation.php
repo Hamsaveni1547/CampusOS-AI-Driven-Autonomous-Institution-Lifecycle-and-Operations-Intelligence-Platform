@@ -3,7 +3,8 @@
 /*
 | Sidebar and command palette. Each item:
 |   label, route (named route), icon (any Lucide name), and optional:
-|   permissions (any of), platform (platform admins only), roles (any of), keywords (palette search).
+|   permissions (any of), platform (platform admins only), roles (any of), keywords (palette search),
+|   hidden_for (roles that never see the item, even when their permissions would allow it).
 | Items whose route does not exist yet are hidden automatically, so future screens
 | can be listed here before they are built.
 */
@@ -38,7 +39,7 @@ return [
             ['label' => 'My results', 'route' => 'my-results.show', 'icon' => 'award', 'roles' => ['student'], 'keywords' => 'grades sgpa cgpa revaluation'],
             ['label' => 'Examinations', 'route' => 'exam-cycles.index', 'icon' => 'file-check', 'permissions' => ['exams.cycles.manage', 'exams.reports.view', 'exams.evaluation.enter', 'exams.results.process', 'exams.results.verify', 'exams.results.publish'], 'keywords' => 'exam timetable eligibility marks results'],
             ['label' => 'Question bank', 'route' => 'question-bank.index', 'icon' => 'file-question', 'permissions' => ['qbank.questions.contribute', 'qbank.questions.manage', 'qbank.papers.set', 'qbank.papers.review'], 'keywords' => 'questions bloom difficulty'],
-            ['label' => 'Question papers', 'route' => 'question-papers.index', 'icon' => 'file-lock', 'permissions' => ['qbank.papers.set', 'qbank.papers.review', 'qbank.papers.seal', 'qbank.papers.release', 'qbank.logs.view'], 'keywords' => 'blueprint generate seal release'],
+            ['label' => 'Question papers', 'route' => 'question-papers.index', 'icon' => 'file-lock', 'permissions' => ['qbank.papers.set', 'qbank.papers.review', 'qbank.papers.seal', 'qbank.papers.release', 'qbank.logs.view', 'qbank.papers.view'], 'keywords' => 'blueprint generate seal release'],
             ['label' => 'My fees', 'route' => 'my-fees.show', 'icon' => 'wallet', 'roles' => ['student'], 'keywords' => 'fees receipts dues payment'],
             ['label' => 'Collect fees', 'route' => 'fees.collect', 'icon' => 'wallet', 'permissions' => ['finance.payments.collect', 'finance.reports.view'], 'keywords' => 'fees payment receipt counter'],
             ['label' => 'Fee reports', 'route' => 'fees.reports', 'icon' => 'chart-column', 'permissions' => ['finance.reports.view'], 'keywords' => 'dues defaulters collections'],
@@ -55,9 +56,9 @@ return [
             ['label' => 'Feedback surveys', 'route' => 'surveys.index', 'icon' => 'clipboard-list', 'permissions' => ['feedback.surveys.manage', 'feedback.results.view'], 'keywords' => 'survey results'],
             ['label' => 'My complaints', 'route' => 'my-complaints.index', 'icon' => 'megaphone', 'roles' => ['student', 'faculty', 'staff'], 'keywords' => 'grievance complaint'],
             ['label' => 'Complaints', 'route' => 'complaints.index', 'icon' => 'megaphone', 'permissions' => ['feedback.complaints.handle', 'feedback.complaints.restricted'], 'keywords' => 'grievance redressal'],
-            ['label' => 'My mentees', 'route' => 'my-mentees.index', 'icon' => 'heart-handshake', 'permissions' => ['mentoring.mentor'], 'keywords' => 'mentor counselling at risk'],
+            ['label' => 'My mentees', 'route' => 'my-mentees.index', 'icon' => 'heart-handshake', 'permissions' => ['mentoring.mentor'], 'hidden_for' => ['institution_admin'], 'keywords' => 'mentor counselling at risk'],
             ['label' => 'My mentor', 'route' => 'my-mentor.show', 'icon' => 'user-check', 'roles' => ['student'], 'keywords' => 'mentor counsellor meeting'],
-            ['label' => 'Mentoring', 'route' => 'mentoring.allocation', 'icon' => 'handshake', 'permissions' => ['mentoring.allocate', 'mentoring.reports.view'], 'keywords' => 'allocate mentors at risk'],
+            ['label' => 'Mentoring', 'route' => 'mentoring.allocation', 'icon' => 'handshake', 'permissions' => ['mentoring.allocate', 'mentoring.reports.view'], 'hidden_for' => ['institution_admin'], 'keywords' => 'allocate mentors at risk'],
             ['label' => 'Maintenance', 'route' => 'maintenance.index', 'icon' => 'wrench', 'roles' => ['faculty', 'staff'], 'keywords' => 'fault repair'],
             ['label' => 'Assets', 'route' => 'assets.index', 'icon' => 'package', 'permissions' => ['assets.reports.view'], 'keywords' => 'equipment inventory warranty'],
             ['label' => 'Room bookings', 'route' => 'room-bookings.index', 'icon' => 'calendar-range', 'permissions' => ['assets.rooms.book', 'assets.reports.view'], 'keywords' => 'lab book seminar hall'],

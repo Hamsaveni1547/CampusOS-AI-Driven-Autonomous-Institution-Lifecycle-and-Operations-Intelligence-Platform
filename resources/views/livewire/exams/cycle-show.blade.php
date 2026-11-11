@@ -4,6 +4,10 @@
     <x-ui.page-header :title="$cycle['name']" :description="$cycle['term']['name'].' · '.\App\Support\Format::label($cycle['type'])" :back="route('exam-cycles.index')" :back-label="__('Examinations')">
         <x-slot:meta><x-ui.status-badge :status="$s" :label="$statuses[$s] ?? null" /></x-slot:meta>
         <x-slot:actions>
+            @if ($cycle['can']['approve'] ?? false)
+                <x-ui.button variant="secondary" icon="x" x-on:click="$dispatch('open-dialog', 'reject-cycle')">{{ __('Reject') }}</x-ui.button>
+                <x-ui.button icon="check" wire:click="step('approve')" wire:confirm="{{ __('Approve this exam cycle? The exam cell can then open registration.') }}">{{ __('Approve') }}</x-ui.button>
+            @endif
             @if ($cycle['can']['manage'] && $s === 'draft')
                 <x-ui.button icon="door-open" wire:click="step('open-registration')" wire:confirm="{{ __('Open registration? A regular cycle registers every student for their courses.') }}">{{ __('Open registration') }}</x-ui.button>
             @elseif ($cycle['can']['manage'] && $s === 'registration_open')
@@ -23,6 +27,20 @@
             @endif
         </x-slot:actions>
     </x-ui.page-header>
+
+    @if ($s === 'pending_approval')
+        <x-ui.alert tone="warning" class="mb-6" :title="__('Waiting for approval')">{{ __('The principal or admin must approve this exam cycle before registration can open. You can still set the exam timetable.') }}</x-ui.alert>
+    @elseif ($s === 'rejected')
+        <x-ui.alert tone="danger" class="mb-6" :title="__('Rejected')">{{ $cycle['approval_remarks'] ?? '' }}</x-ui.alert>
+    @endif
+
+    <x-ui.modal name="reject-cycle" :title="__('Reject exam cycle')" size="sm">
+        <form wire:submit="reject" id="reject-cycle-form"><x-ui.textarea :label="__('Reason')" wire:model="rejectReason" rows="3" required /></form>
+        <x-slot:footer>
+            <x-ui.button variant="secondary" x-on:click="$dispatch('close-dialog', 'reject-cycle')">{{ __('Cancel') }}</x-ui.button>
+            <x-ui.button type="submit" form="reject-cycle-form" loading="reject">{{ __('Reject') }}</x-ui.button>
+        </x-slot:footer>
+    </x-ui.modal>
 
     <div class="mb-6 grid gap-4 sm:grid-cols-3">
         <x-ui.stat :label="__('Registrations')" :value="$cycle['registrations'] ?? 0" icon="users" />

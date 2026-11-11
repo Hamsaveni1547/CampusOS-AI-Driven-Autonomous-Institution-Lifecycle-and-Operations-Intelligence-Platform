@@ -38,6 +38,10 @@ class AttendanceScreensTest extends TestCase
     {
         $date = now()->subDay()->toDateString();
         Http::fake([
+            self::API.'me/teaching*' => Http::response(['data' => ['term' => null, 'weekly_hours' => 4, 'classes' => [
+                ['id' => 'os1', 'course' => ['code' => '21CS51', 'title' => 'DBMS'], 'section' => ['name' => 'A', 'batch' => 'BE-CSE 2026'], 'components' => [], 'coverage_percent' => 0],
+                ['id' => 'os2', 'course' => ['code' => '21CS52', 'title' => 'Networks'], 'section' => ['name' => 'B', 'batch' => 'BE-CSE 2026'], 'components' => [], 'coverage_percent' => 0],
+            ]]]),
             self::API.'me/attendance/pending' => Http::response(['data' => [['entry_id' => 'en1', 'adjustment_id' => null, 'slot_id' => 'p1', 'slot' => 'P1', 'starts_at' => '09:00', 'ends_at' => '10:00', 'class_id' => 'os1', 'course' => ['code' => '21CS51', 'title' => 'DBMS'], 'section' => 'BE-CSE 2026 A', 'teacher' => 'Dr. Kavya', 'room' => null, 'status' => 'scheduled', 'reason' => null, 'date' => $date]]]),
             self::API.'attendance/sheet*' => fn (Request $r) => $r->method() === 'POST'
                 ? Http::response(['data' => ['id' => 'as1', 'message' => 'Attendance saved. 1 absent.']])
@@ -47,6 +51,16 @@ class AttendanceScreensTest extends TestCase
                     'students' => [['student_id' => 'st1', 'register_no' => 'R1', 'roll_no' => '01', 'name' => 'Asha', 'status' => null], ['student_id' => 'st2', 'register_no' => 'R2', 'roll_no' => '02', 'name' => 'Bala', 'status' => null]],
                 ]]),
         ]);
+
+        // Section → subject → students
+        Livewire::test(Take::class)
+            ->assertSee('1. Section')
+            ->set('pickSection', 'BE-CSE 2026 A')
+            ->assertSet('pickClass', 'os1')
+            ->set('pickDate', $date)
+            ->call('startPicked')
+            ->assertSet('class', 'os1')
+            ->assertSee('Asha');
 
         Livewire::test(Take::class)
             ->assertSee('DBMS')

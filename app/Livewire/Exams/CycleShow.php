@@ -47,9 +47,23 @@ class CycleShow extends Component
         $messages = [
             'open-registration' => __('Registration opened'), 'close-registration' => __('Registration closed and eligibility decided'),
             'eligibility' => __('Eligibility recalculated'), 'process' => __('Results processed'), 'verify' => __('Results verified'), 'publish' => __('Results published'),
+            'approve' => __('Exam cycle approved'),
         ];
 
         $this->callApi(fn () => $this->api()->post('exam-cycles/'.$this->cycleId.'/'.$action), onSuccess: fn () => $this->toast('success', $messages[$action] ?? __('Done')));
+    }
+
+    /** Reason when an approver rejects a new exam cycle. */
+    public string $rejectReason = '';
+
+    public function reject(): void
+    {
+        $this->validate(['rejectReason' => 'required|string|max:500']);
+
+        $this->callApi(fn () => $this->api()->post('exam-cycles/'.$this->cycleId.'/reject', ['reason' => $this->rejectReason]), fieldMap: ['reason' => 'rejectReason'], onSuccess: function (): void {
+            $this->dispatch('close-dialog', 'reject-cycle');
+            $this->toast('success', __('Exam cycle rejected'));
+        });
     }
 
     public function openSchedule(?string $id = null): void

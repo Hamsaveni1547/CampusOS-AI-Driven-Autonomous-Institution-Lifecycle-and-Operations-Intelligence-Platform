@@ -1,8 +1,19 @@
 @php($tones = ['present' => 'peer-checked:bg-success peer-checked:text-white', 'absent' => 'peer-checked:bg-danger peer-checked:text-white', 'late' => 'peer-checked:bg-warning peer-checked:text-white', 'on_duty' => 'peer-checked:bg-info peer-checked:text-white', 'medical' => 'peer-checked:bg-primary peer-checked:text-white'])
 <div>
     @if ($sheet === null)
-        <x-ui.page-header :title="__('Take attendance')" :description="__('Classes from your timetable in the last 7 days that still need attendance.')" />
+        <x-ui.page-header :title="__('Take attendance')" :description="__('Choose a section and subject, or pick a class from your timetable below.')" />
 
+        <x-ui.card class="mb-6" :title="__('Mark attendance')">
+            <form wire:submit="startPicked" class="grid items-end gap-4 sm:grid-cols-4">
+                <x-ui.select :label="__('1. Section')" wire:model.live="pickSection" :options="$sections" :placeholder="__('Choose section…')" required />
+                <x-ui.select :label="__('2. Subject')" wire:model="pickClass" :options="$subjects" :placeholder="$pickSection === '' ? __('Choose a section first') : __('Choose subject…')" :disabled="$pickSection === ''" required />
+                <x-ui.input type="date" :label="__('3. Date')" wire:model="pickDate" :max="now()->toDateString()" required />
+                <x-ui.button type="submit" icon="users" loading="startPicked">{{ __('Show students') }}</x-ui.button>
+            </form>
+            @if ($sections === [])<p class="mt-3 text-sm text-ink-muted">{{ __('You have no classes allocated this term.') }}</p>@endif
+        </x-ui.card>
+
+        <h2 class="mb-2 text-sm font-semibold text-ink">{{ __('Still to mark from your timetable (last 7 days)') }}</h2>
         <x-ui.card :padding="false">
             @forelse ($pending as $period)
                 <div wire:key="pd-{{ $period['date'] }}-{{ $period['class_id'] }}-{{ $period['slot_id'] }}" class="flex flex-wrap items-center gap-3 border-b border-line px-5 py-3 last:border-0">
